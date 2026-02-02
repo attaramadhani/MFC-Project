@@ -36,8 +36,8 @@ Fitur utama mencakup halaman admin & pelanggan, serta integrasi pembayaran (Midt
 
 ### 1) Clone repo
 ```bash
-git clone <repo-url>
-cd <folder-project>
+git clone <https://github.com/andhikkadd/Simple-Resto-App.git>
+cd <Simple-Resto-App.git>
 ```
 ### 2) Install dependency (Composer)
 ```bash
@@ -48,12 +48,21 @@ composer install
 mysql -u root -p manajemen_restoran < "manajemen_restoran.sql"
 ```
 ### 4) Konfigurasi koneksi database
+- Rename .env.example jadi .env
+- Isi konfigurasi database & Midtrans
+
+### 5) Midtrans callback (local), jalankan ngrok
 ```bash
-git clone <repo-url>
-cd <folder-project>
+ngrok http 80
 ```
-### 5) Jalankan di localhost
+
+### 6) Jalankan di localhost
 ```bash
-git clone <repo-url>
-cd <folder-project>
+http://localhost/...
 ```
+
+---
+
+## Notes
+- Project ini masih menggunakan struktur PHP procedural.
+- Belum menerapkan framework atau arsitektur MVC secara penuh.
