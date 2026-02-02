@@ -1,0 +1,1187 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(180deg, #FFF5EB 0%, #FFE1C6 50%, #FFFFFF 100%);
+}
+.navbar-brand {
+    font-weight: 700;
+    color: #F97316 !important;
+}
+.nav-link:hover {
+    color: #F97316 !important;
+}
+        .navbar-blur {
+    backdrop-filter: blur(12px);
+    background: rgba(255,255,255,0.96);
+    box-shadow: 0 8px 20px rgba(15,23,42,0.08);
+}
+.navbar {
+    min-height: 70px;
+}
+
+.navbar-nav.nav-main .nav-link {
+    font-size: 0.92rem;
+    font-weight: 500;
+    padding: 0.35rem 1.1rem;
+    border-radius: 999px;
+    color: #4B5563;
+    transition: background 0.18s ease, color 0.18s ease, transform 0.12s ease;
+}
+.navbar-nav.nav-main .nav-link:hover,
+.navbar-nav.nav-main .nav-link:focus {
+    background: rgba(248, 113, 22, 0.08);
+    color: #C2410C !important;
+    transform: translateY(-1px);
+}
+.navbar-nav.nav-main .nav-link.active {
+    background: rgba(248, 113, 22, 0.12);
+    color: #C2410C !important;
+}
+
+.user-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: #F3F4F6;
+    font-size: 0.8rem;
+    color: #4B5563;
+}
+.user-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    background: #F97316;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: #fff;
+    font-weight: 600;
+}
+
+@media (max-width: 576px) {
+    .navbar-nav.nav-main .nav-link {
+        padding-left: 0.9rem;
+        padding-right: 0.9rem;
+    }
+}
+.user-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    background: #F97316;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: #fff;
+    font-weight: 600;
+}
+.text-orange {
+    color: #EA580C;
+}
+
+/* === HERO FULL SCREEN === */
+.hero-section {
+    padding-top: 6rem;
+    padding-bottom: 4rem;
+    min-height: calc(100vh - 70px); 
+    display: flex;
+    align-items: center;
+}
+.hero-title {
+    font-size: 2.7rem;
+    font-weight: 800;
+    color: #C2410C;
+}
+.hero-subtitle {
+    color: #6B7280;
+}
+.btn-main {
+    background: #F97316;
+    border: none;
+    border-radius: 999px;
+    padding: 0.6rem 1.6rem;
+    font-weight: 600;
+}
+.btn-main:hover {
+    background: #ea580c;
+}
+
+/* === KARTU MENU: CLEAN & SIMPLE === */
+.menu-card {
+    border-radius: 1.25rem;
+    overflow: hidden;
+    border: 1px solid #E5E7EB;
+    background: #ffffff;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04);
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        border-color 0.18s ease;
+}
+
+.menu-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    border-color: #FED7AA;
+}
+
+.menu-img-placeholder {
+    background: linear-gradient(135deg, #FDBA74, #FED7AA);
+    height: 180px;
+}
+
+.menu-card-body {
+    padding: 0.85rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.badge-kategori {
+    text-transform: capitalize;
+    font-size: 0.65rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+}
+
+.menu-tagline {
+    font-size: 0.75rem;
+    color: #9CA3AF;
+}
+
+.menu-card-body .card-text {
+    font-size: 0.78rem;
+    color: #6B7280;
+}
+
+.menu-card-footer {
+    margin-top: 0.4rem;
+    padding-top: 0.35rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.menu-card-footer .text-orange {
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.floating-cart-btn {
+    position: fixed;
+    right: 4rem;
+    bottom: 4rem;
+    z-index: 1050;
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    border: 1px solid rgba(248, 113, 22, 0.28); 
+    background: radial-gradient(circle at 30% 20%, #FED7AA, #FB923C); 
+    box-shadow: 0 14px 30px rgba(248, 113, 22, 0.35); 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #9A3412;
+    transition:
+        transform 0.14s ease,
+        box-shadow 0.14s ease,
+        background 0.14s ease,
+        border-color 0.14s ease;
+}
+
+.floating-cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(248, 113, 22, 0.45);
+    background: radial-gradient(circle at 30% 20%, #FDBA74, #F97316);
+    border-color: rgba(234, 88, 12, 0.6); /* #EA580C */
+}
+
+.floating-cart-icon {
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+.floating-cart-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #EF4444;    
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 14px rgba(239, 68, 68, 0.55);
+}
+
+@media (max-width: 576px) {
+    .floating-cart-btn {
+        right: 1.1rem;
+        bottom: 1.3rem;
+        width: 48px;
+        height: 48px;
+        box-shadow: 0 10px 26px rgba(248, 113, 22, 0.38);
+    }
+    .floating-cart-icon {
+        font-size: 1.2rem;
+    }
+}
+
+/* === KONTROL QTY MODERN (PLUS INPUT) === */
+.qty-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    background: #FFF7ED;
+    border-radius: 999px;
+    padding: 0.15rem 0.45rem;
+    border: 1px solid rgba(248, 181, 95, 0.65);
+    box-shadow: 0 4px 10px rgba(248, 113, 22, 0.12);
+}
+
+.qty-control-sm {
+    padding: 0.1rem 0.4rem;
+    box-shadow: none;
+    background: #F9FAFB;
+}
+
+.qty-btn,
+.qty-btn-modal {
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    background: #FED7AA;
+    color: #9A3412;
+    transition: transform 0.12s ease,
+                box-shadow 0.12s ease,
+                background 0.12s ease;
+}
+
+.qty-control-sm .qty-btn-modal {
+    width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
+}
+
+.qty-btn:hover,
+.qty-btn-modal:hover {
+    background: #FDBA74;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+.qty-btn:active,
+.qty-btn-modal:active {
+    transform: scale(0.9);
+    box-shadow: none;
+}
+
+/* INPUT JUMLAH DI TENGAH: keliatan kayak teks, bukan kotak form */
+.qty-input {
+    width: 46px;
+    text-align: center;
+    border: none;
+    background: transparent;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #111827;
+    outline: none;
+    padding: 0 0.1rem;
+
+    appearance: textfield;
+    -moz-appearance: textfield;
+    -webkit-appearance: none;
+}
+
+.qty-input::-webkit-inner-spin-button,
+.qty-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.qty-input:focus {
+    outline: none;
+}
+
+.qty-value {
+    min-width: 20px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+
+/* Badge keranjang ngebounce dikit pas update */
+@keyframes badge-bump {
+    0%   { transform: scale(1);   }
+    30%  { transform: scale(1.15);}
+    100% { transform: scale(1);   }
+}
+.badge-bump {
+    animation: badge-bump 0.25s ease-out;
+}
+
+/* === CART MODAL STYLING PROFESIONAL === */
+.cart-modal-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 65vh;
+}
+.cart-modal-list {
+    overflow-y: auto;
+    padding-right: 2px;
+}
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0.25rem;
+    border-bottom: 1px solid #E5E7EB;
+}
+.cart-item:last-child {
+    border-bottom: none;
+}
+.cart-item-left {
+    flex: 1;
+    min-width: 0;
+}
+.cart-item-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.1rem;
+}
+.cart-item-meta {
+    font-size: 0.78rem;
+    color: #6B7280;
+}
+.cart-item-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+    margin-left: 0.75rem;
+    white-space: nowrap;
+}
+.cart-item-subtotal {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #111827;
+}
+.cart-modal-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;               
+    padding-top: 1.1rem;
+    border-top: 1px solid #E5E7EB;
+}
+.cart-modal-summary-text {
+    font-size: 0.82rem;
+    color: #6B7280;
+}
+.cart-modal-total-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #111827;
+}
+.cart-modal-total-value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #EA580C;
+}
+
+@media (max-width: 576px) {
+    .cart-item {
+        align-items: flex-start;
+    }
+    .cart-item-right {
+        align-items: flex-end;
+    }
+}
+
+/* === OVERRIDE CART MODAL LAYOUT === */
+#cartModal .modal-dialog {
+    max-width: 560px;  
+    width: 100%;
+    margin: 1.75rem auto;
+}
+
+#cartModal .modal-content {
+    border-radius: 1.6rem;
+    border: none;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
+}
+
+/* HEADER: kasih batas antara judul & isi */
+#cartModal .modal-header {
+    padding: 1.05rem 1.4rem 0.75rem;
+    border-bottom: 1px solid #E5E7EB; 
+}
+
+#cartModal .modal-title {
+    font-size: 1.06rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* BODY: atur spacing supaya bagian bawah nggak terlalu mepet */
+#cartModal .modal-body {
+    padding: 0.9rem 1.4rem 1.3rem;   
+    font-size: 0.85rem;
+}
+
+/* Sedikit rapihin ringkasan (Total + Checkout) di bawah */
+.cart-modal-summary {
+    margin-top: 0.6rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid #E5E7EB;
+}
+
+.cart-modal-summary-text {
+    font-size: 0.8rem;
+}
+
+/* Tombol checkout biar nggak terlalu nempel tepi bawah */
+.cart-modal-summary .btn {
+    padding-inline: 1.6rem;
+    padding-block: 0.55rem;
+}
+
+/* === FIX BAGIAN TOTAL + CHECKOUT SUPAYA LEBIH LEBAR & RAPI === */
+.cart-modal-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;                   /* jarak antar kolom */
+    padding-top: 1.1rem;
+    border-top: 1px solid #E5E7EB;
+}
+
+.cart-modal-summary-left {
+    flex: 1.2;                  
+    min-width: 150px;
+}
+
+/* Kolom kanan (tombol Checkout) */
+.cart-modal-summary-right {
+    flex-shrink: 0;       
+}
+
+/* Styling teks total */
+.cart-modal-total-label,
+.cart-modal-total-value {
+    font-size: 1rem;
+}
+
+/* Tombol checkout biar nggak terlalu nempel tepi bawah */
+.cart-modal-summary .btn {
+    padding: 0.55rem 1.6rem;
+    white-space: nowrap;        
+}
+
+/* Lebarkan modal dikit */
+#cartModal .modal-dialog {
+    max-width: 600px !important;
+}
+
+#cartModal .modal-body {
+    padding-bottom: 1.6rem;
+}
+/* === FOOTER KARTU MENU LEBIH RAPI === */
+.menu-card-footer {
+    margin-top: 0.25rem;
+    padding-top: 0.45rem;
+    border-top: 1px dashed #E5E7EB;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+/* === RAPIKAN LAYOUT CARD MENU === */
+.menu-card-body {
+    display: flex;
+    flex-direction: column;
+    padding: 0.9rem 1rem 1rem;
+}
+
+/* judul + tagline + kategori tetap di atas */
+.menu-card-body .card-title {
+    font-weight: 600;
+}
+
+/* deskripsi boleh panjang/pendek, footer tetap nempel bawah */
+.menu-card-body .card-text {
+    font-size: 0.83rem;
+    color: #6B7280;
+}
+
+/* footer selalu di posisi paling bawah kartu */
+.menu-card-footer {
+    margin-top: auto;           
+    padding-top: 0.55rem;
+    border-top: 1px dashed #FEE2C5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+/* === SOFTEN KONTROL QTY (- [angka] +) === */
+.qty-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    background: rgba(255, 247, 237, 0.9);        
+    border-radius: 999px;
+    padding: 0.12rem 0.4rem;
+    border: 1px solid rgba(248, 181, 95, 0.45);  
+    box-shadow: 0 3px 8px rgba(248, 113, 22, 0.12);
+}
+
+/* tombol - dan + lebih kecil, nggak teriak */
+.qty-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+    background: #FDEFD9;
+    color: #9A3412;
+    transition: transform 0.12s ease,
+                box-shadow 0.12s ease,
+                background 0.12s ease;
+}
+
+.qty-btn:hover {
+    background: #FED7AA;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+
+.qty-btn:active {
+    transform: scale(0.92);
+    box-shadow: none;
+}
+
+/* angka di tengah tetap kelihatan clean */
+.qty-input {
+    width: 38px;
+    text-align: center;
+    border: none;
+    background: transparent;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #9A3412;
+    padding: 0;
+    margin: 0 1px;
+    outline: none;
+    appearance: textfield;
+    -moz-appearance: textfield;
+    -webkit-appearance: none;
+}
+.qty-input::-webkit-inner-spin-button,
+.qty-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.qty-input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/* === MODAL "HARUS LOGIN DULU" === */
+
+#loginRequiredModal .modal-dialog {
+    max-width: 420px;
+}
+
+#loginRequiredModal .modal-backdrop {
+    backdrop-filter: blur(2px);
+}
+
+.login-required-card {
+    border-radius: 1.4rem;
+    border: none;
+    padding: 1.6rem 1.6rem 1.4rem;
+    position: relative;
+    box-shadow: 0 22px 55px rgba(15, 23, 42, 0.28);
+    background: radial-gradient(circle at 0% 0%, #FFEDD5 0%, #FFFFFF 40%);
+}
+
+.login-required-body {
+    text-align: center;
+}
+
+.login-required-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    margin: 0 auto 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    background: #FFF7ED;
+    box-shadow: 0 10px 25px rgba(248, 113, 22, 0.25);
+    color: #C2410C;
+}
+
+.login-required-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #111827;
+}
+
+.login-required-subtitle {
+    font-size: 0.86rem;
+    color: #6B7280;
+}
+
+/* close button di pojok kanan atas, agak melayang */
+.login-required-close {
+    position: absolute;
+    top: 0.7rem;
+    right: 0.9rem;
+    z-index: 2;
+    filter: grayscale(0.2);
+}
+
+/* === PAGE FLASH SINGKAT SAAT HALAMAN DIBUKA === */
+@keyframes page-flash {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+body {
+    animation: page-flash 0.01s ease-out; 
+}
+
+/* === LIST PESANAN PELANGGAN === */
+.order-list-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+/* kartu pesanan */
+.order-card {
+    border-radius: 1rem;
+    border: 1px solid #E5E7EB;
+    background: #ffffff;
+    padding: 0.7rem 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    cursor: pointer;
+    transition: background 0.16s ease, box-shadow 0.16s ease, transform 0.12s ease, border-color 0.16s ease;
+}
+
+.order-card:hover {
+    background: #FFF7ED;
+    border-color: #FED7AA;
+    box-shadow: 0 10px 26px rgba(15,23,42,0.08);
+    transform: translateY(-1px);
+}
+
+.order-card-left {
+    flex: 1;
+    min-width: 0;
+}
+
+.order-code-label {
+    font-size: 0.7rem;
+    color: #9CA3AF;
+}
+
+.order-code-value {
+    display: inline-block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #111827;
+}
+
+.order-meta {
+    font-size: 0.78rem;
+    margin-top: 0.15rem;
+}
+
+.order-card-right {
+    min-width: 150px;
+}
+
+.order-total {
+    font-size: 0.95rem;
+    color: #111827;
+}
+
+.order-badge-row {
+    margin-top: 0.2rem;
+    display: flex;
+    gap: 0.25rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+/* pill status */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 0.1rem 0.55rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+/* warna-warna halus */
+.badge-soft-gray {
+    background: #F3F4F6;
+    color: #4B5563;
+}
+
+.badge-soft-green {
+    background: #DCFCE7;
+    color: #166534;
+}
+
+.badge-soft-amber {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.badge-soft-red {
+    background: #FEE2E2;
+    color: #B91C1C;
+}
+
+.badge-soft-blue {
+    background: #DBEAFE;
+    color: #1D4ED8;
+}
+
+/* DETAIL PESANAN (ISIAN MODAL) */
+.order-detail-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    font-size: 0.86rem;
+}
+
+.order-detail-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.order-detail-items {
+    max-height: 40vh;
+    overflow-y: auto;
+}
+
+.order-detail-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px dashed #E5E7EB;
+}
+
+.order-detail-item:last-child {
+    border-bottom: none;
+}
+
+.order-detail-item-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.order-detail-item-subtotal {
+    white-space: nowrap;
+    font-weight: 600;
+    color: #111827;
+}
+
+/* summary bawah */
+.order-detail-summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.2rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid #E5E7EB;
+}
+
+.order-detail-summary-left {
+    flex: 1;
+    min-width: 0;
+}
+
+.order-detail-total {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #EA580C;
+}
+
+.order-detail-summary-right .btn {
+    padding: 0.45rem 1.4rem;
+}
+
+/* === HALAMAN PESANAN: KARTU LEBIH PROFESIONAL === */
+.section-title {
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: #C2410C;
+}
+
+.order-list-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+/* Kartu */
+.order-card {
+    padding: 1rem 1.3rem;
+    border-radius: 1.1rem;
+    background: #ffffff;
+    border: 1px solid #F3F4F6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.2rem;
+    cursor: pointer;
+
+    transition: 
+        background 0.15s ease,
+        box-shadow 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.14s ease;
+}
+
+.order-card:hover {
+    background: #FFF7ED;
+    border-color: #FDBA74;
+    box-shadow: 0 14px 35px rgba(248,113,22,0.15);
+    transform: translateY(-3px);
+}
+
+/* Kiri */
+.order-card-left .order-code-value {
+    font-size: 1rem;
+    color: #111827;
+}
+
+.order-meta {
+    margin-top: 4px;
+    font-size: 0.8rem;
+    color: #6B7280;
+}
+
+/* Kanan */
+.order-total {
+    color: #C2410C;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.order-badge-row {
+    margin-top: 0.3rem;
+    display: flex;
+    gap: 0.35rem;
+}
+
+/* Badge */
+.status-pill {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: 999px;
+}
+
+.badge-soft-green { background: #DCFCE7; color: #166534; }
+.badge-soft-red { background: #FEE2E2; color: #B91C1C; }
+.badge-soft-blue { background: #DBEAFE; color: #1D4ED8; }
+.badge-soft-amber { background: #FEF3C7; color: #92400E; }
+.badge-soft-gray { background: #F3F4F6; color: #4B5563; }
+
+/* === MODAL DETAIL PESANAN === */
+
+.order-detail-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.order-detail-header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.order-detail-items .order-detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px dashed #E5E7EB;
+}
+
+.order-detail-summary {
+    padding-top: 1rem;
+    border-top: 1px solid #E5E7EB;
+    display: flex;
+    justify-content: space-between;
+}
+
+.order-detail-total {
+    color: #EA580C;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.modal-content {
+    animation: popFade 0.22s ease-out;
+}
+
+@keyframes popFade {
+    0%   { transform: scale(0.94); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* SECTION WRAPPER HALAMAN PESANAN */
+.page-orders {
+    padding-top: 2.5rem;
+    padding-bottom: 3rem;
+}
+
+.page-orders-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #C2410C;
+    margin-bottom: 0.1rem;
+}
+
+.page-orders-subtitle {
+    font-size: 0.9rem;
+    color: #6B7280;
+}
+
+/* LIST & CARD PESANAN */
+.order-list-wrapper {
+    margin-top: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.order-card {
+    border-radius: 1.1rem;
+    background: #ffffff;
+    border: 1px solid #F3F4F6;
+    padding: 0.95rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.2rem;
+    cursor: pointer;
+    transition:
+        background 0.16s ease,
+        box-shadow 0.16s ease,
+        transform 0.12s ease,
+        border-color 0.16s ease;
+}
+
+.order-card:hover {
+    background: #FFF7ED;
+    border-color: #FDBA74;
+    box-shadow: 0 14px 36px rgba(248,113,22,0.18);
+    transform: translateY(-2px);
+}
+
+.order-card-left {
+    flex: 1;
+    min-width: 0;
+}
+
+.order-code-row {
+    display: flex;
+    flex-direction: column;
+}
+
+.order-code-label {
+    font-size: 0.7rem;
+    color: #9CA3AF;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.order-code-value {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.order-meta {
+    margin-top: 0.2rem;
+    font-size: 0.8rem;
+    color: #6B7280;
+}
+
+.order-card-right {
+    text-align: right;
+    min-width: 160px;
+}
+
+.order-total {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #C2410C;
+}
+
+.order-badge-row {
+    margin-top: 0.25rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+}
+
+/* pill status */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.badge-soft-green { background:#DCFCE7; color:#166534; }
+.badge-soft-red   { background:#FEE2E2; color:#B91C1C; }
+.badge-soft-blue  { background:#DBEAFE; color:#1D4ED8; }
+.badge-soft-amber { background:#FEF3C7; color:#92400E; }
+.badge-soft-gray  { background:#F3F4F6; color:#4B5563; }
+
+/* DETAIL PESANAN DALAM MODAL */
+.order-detail-header {
+    display:flex;
+    justify-content:space-between;
+    gap:1rem;
+    padding-bottom:0.75rem;
+    border-bottom:1px solid #E5E7EB;
+}
+
+.order-detail-total {
+    font-size:1.1rem;
+    font-weight:700;
+    color:#EA580C;
+}
+
+/* === HALAMAN LOGIN FULL HEIGHT (SETELAH NAVBAR) === */
+.auth-page {
+    min-height: calc(100vh - 70px); /* 70px = tinggi navbar */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.auth-page > .container {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.auth-card {
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+    background: radial-gradient(circle at 0% 0%, #FFEDD5 0%, #FFFFFF 55%);
+}
+
+.btn-natural {
+  background: #f2f2f2;        /* abu natural */
+  border: 1px solid #d9d9d9;  /* garis tipis */
+  color: #333;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 6px 12px;
+  transition: 0.2s;
+}
+
+.btn-natural:hover {
+  background: #e6e6e6;
+  border-color: #c6c6c6;
+}
+
+.btn-natural:active {
+  background: #dcdcdc;
+}
+
+#chartDaily, #chartMonthly {
+    height: 260px !important;
+    max-height: 260px !important;
+}
+.stat-card canvas {
+    height: 260px !important;
+}
+
+.order-detail-receipt-link {
+    font-size: 0.8rem;
+    color: #6c757d;
+    opacity: 0.9;
+}
+
+.order-detail-receipt-link:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.order-detail-receipt-link span {
+    line-height: 1;
+}
+
+.menu-category-header {
+  margin: 3rem 0 1.5rem;
+  padding-left: 12px;
+  border-left: 5px solid #ff8a00;
+}
+
+.menu-category-header h3 {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #333;
+}

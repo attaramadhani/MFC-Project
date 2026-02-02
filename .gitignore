@@ -1,0 +1,20 @@
+# Environment
+.env
+.env.*
+
+# Editor
+.history/
+.vscode/
+.idea/
+
+# Composer
+/vendor/
+
+# Logs & cache
+*.log
+cache/
+tmp/
+
+# OS
+.DS_Store
+Thumbs.db
