@@ -79,7 +79,7 @@ include __DIR__ . '/partials/admin_header.php';
           <div class="user-role text-muted">Administrator</div>
         </div>
       </div>
-      <a href="../logout.php" class="btn btn-sm btn-outline-danger w-100 mt-2">
+      <a href="../logout.php" class="btn btn-sm btn-outline-danger w-100 mt -2">
         Logout
       </a>
     </div>
