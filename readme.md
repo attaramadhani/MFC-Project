@@ -1,68 +1,126 @@
-# Geprekin - Manajemen Restoran (PHP Native)
+# Geprekin - Manajemen Restoran (Laravel Version)
 
-Aplikasi manajemen restoran sederhana menggunakan PHP native (tanpa framework).
-Fitur utama mencakup halaman admin & pelanggan, serta integrasi pembayaran (Midtrans).
-
----
-
-## Fitur
-- Auth: login / register / logout
-- Admin panel (manajemen data)
-- Pelanggan (fitur sisi user)
-- Integrasi pembayaran (Midtrans)
-- Assets (CSS/JS)
+Aplikasi manajemen restoran berbasis **Laravel** yang
+Menyediakan fitur admin & pelanggan serta integrasi pembayaran menggunakan **Midtrans**.
 
 ---
 
-## Tech Stack
-- PHP (native)
-- MySQL/MariaDB
-- Composer (dependency management)
-- Midtrans (payment gateway)
-- Ngrok (untuk callback/webhook Midtrans saat local)
+## 🚀 Fitur
+
+* 🔐 Authentication (Login, Register, Logout)
+* 👨‍💼 Admin Panel (manajemen menu & transaksi)
+* 👥 Pelanggan (order & pembayaran)
+* 💳 Integrasi Midtrans (payment gateway)
+* 📦 Struktur MVC (Laravel)
+* 🗄️ Database Migration & Seeder
 
 ---
 
-## Requirement
-- PHP >= 7.x (disarankan 8.x)
-- MySQL/MariaDB
-- Composer
-- Web server: Apache (XAMPP/Laragon) atau Nginx
-- (Opsional) Ngrok
+## 🛠️ Tech Stack
+
+* Laravel
+* PHP >= 8.x
+* MySQL / MariaDB
+* Composer
+* Node.js & NPM
+* Midtrans
+* Ngrok (opsional)
 
 ---
 
-## Cara Menjalankan (Local)
+## 📦 Requirement
 
-### 1) Clone repo
+* PHP >= 8.x
+* Composer
+* MySQL / MariaDB
+* Node.js & NPM
+
+---
+
+## ⚙️ Cara Menjalankan (Local)
+
+### 1) Clone Repository
+
 ```bash
-git clone <https://github.com/andhikkadd/Simple-Resto-App.git>
-cd <Simple-Resto-App.git>
+git clone https://github.com/andhikkadd/Simple-Resto-App.git
+cd Simple-Resto-App
 ```
-### 2) Install dependency (Composer)
+
+---
+
+### 2) Install Dependency
+
 ```bash
 composer install
-```
-### 3) Setup Database
-```bash
-mysql -u root -p manajemen_restoran < "manajemen_restoran.sql"
-```
-### 4) Konfigurasi koneksi database
-- Rename .env.example jadi .env
-- Isi konfigurasi database & Midtrans
-
-### 5) Midtrans callback (local), jalankan ngrok
-```bash
-ngrok http 80
-```
-
-### 6) Jalankan di localhost
-```bash
-http://localhost/...
+npm install
 ```
 
 ---
 
-## Notes
-- Project ini masih menggunakan struktur PHP procedural.
-- Belum menerapkan framework atau arsitektur MVC secara penuh.
+### 3) Setup Environment
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Konfigurasi:
+
+* Database
+* Midtrans (SERVER_KEY & CLIENT_KEY)
+
+---
+
+### 4) Setup Database
+
+```bash
+php artisan migrate --seed
+```
+
+Perintah ini akan:
+
+* Membuat struktur tabel (migration)
+* Mengisi data awal (seeder)
+
+---
+
+### 5) Jalankan Server
+
+```bash
+php artisan serve
+```
+
+Akses:
+
+```
+http://127.0.0.1:8000
+```
+
+---
+
+### 6) Midtrans Callback (Local)
+
+```bash
+ngrok http 8000
+```
+
+Gunakan URL dari ngrok untuk konfigurasi webhook Midtrans.
+
+---
+
+## 📁 Struktur Project
+
+```
+app/
+routes/
+resources/
+database/
+public/
+```
+
+---
+
+## ⚠️ Catatan
+
+* Project ini dibuat untuk pembelajaran dan pengembangan pribadi.
+* Jalankan `php artisan migrate --seed` setelah clone project
