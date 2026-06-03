@@ -185,7 +185,7 @@ class DummyTransactionSeeder extends Seeder
                 'total_harga'        => $totalHarga,
                 'payment_status'     => $tx['payment'],
                 'order_status'       => $tx['order'],
-                'stok_dikurangi'     => $tx['payment'] === 'paid' ? true : false,
+                'stok_dikurangi'     => DB::raw($tx['payment'] === 'paid' ? 'TRUE' : 'FALSE'),
                 'alamat_pengiriman'  => 'Jl. Dummy No. ' . ($idx + 1) . ', ' . $wilayah,
                 'wilayah_pengiriman' => $wilayah,
                 'ongkir'             => $ongkir,
