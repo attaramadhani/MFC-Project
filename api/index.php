@@ -1,7 +1,6 @@
 <?php
 
 // Force APP_DEBUG to true for debugging Vercel deployment
-echo "API/INDEX.PHP EXECUTED!\n";
 putenv('APP_DEBUG=true');
 $_ENV['APP_DEBUG'] = 'true';
 $_SERVER['APP_DEBUG'] = 'true';

@@ -5,15 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\RoleMiddleware;
 
-if (getenv('VERCEL') || isset($_SERVER['VERCEL'])) {
-    header('Content-Type: text/plain');
-    echo "VERCEL environment detected!\n";
-    echo "getenv('APP_PACKAGES_CACHE'): " . var_export(getenv('APP_PACKAGES_CACHE'), true) . "\n";
-    echo "\$_ENV['APP_PACKAGES_CACHE']: " . var_export($_ENV['APP_PACKAGES_CACHE'] ?? null, true) . "\n";
-    echo "\$_SERVER['APP_PACKAGES_CACHE']: " . var_export($_SERVER['APP_PACKAGES_CACHE'] ?? null, true) . "\n";
-    echo "putenv value check: " . var_export(getenv('APP_PACKAGES_CACHE'), true) . "\n";
-    exit;
-}
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
