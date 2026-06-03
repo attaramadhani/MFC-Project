@@ -21,5 +21,14 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->report(function (\Throwable $e) {
+            // Check if we are running in Vercel to intercept and display the original exception
+            if (getenv('VERCEL') || isset($_SERVER['VERCEL'])) {
+                echo "<h1>Original Exception Caught in bootstrap/app.php</h1>";
+                echo "<p><strong>Message:</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
+                echo "<p><strong>File:</strong> " . htmlspecialchars($e->getFile()) . " (Line " . $e->getLine() . ")</p>";
+                echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+                exit;
+            }
+        });
     })->create();
