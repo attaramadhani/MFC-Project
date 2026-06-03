@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('kode_pesanan', 30)->unique();
             $table->decimal('total_harga', 10, 2);
             $table->enum('payment_status', ['unpaid', 'pending', 'paid', 'failed', 'expired', 'refunded'])->default('unpaid');
-            $table->enum('order_status', ['created', 'processing', 'ready', 'completed', 'canceled'])->default('created');
+            $table->enum('order_status', ['created', 'waiting_confirmation', 'processing', 'ready', 'completed', 'canceled'])->default('created');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();
             $table->timestamp('paid_at')->nullable();
