@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('nama', 100);
             $table->text('deskripsi')->nullable();
             $table->decimal('harga', 10, 2);
-            $table->enum('kategori', ['geprek', 'crispy', 'gangnam', 'minuman', 'tambahan']);
+            $table->enum('kategori', ['geprek', 'crispy', 'gangnam', 'minuman', 'tambahan', 'paket']);
             $table->string('gambar', 255)->nullable();
             $table->timestamp('dibuat_pada')->useCurrent();
         });
