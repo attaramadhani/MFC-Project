@@ -144,7 +144,17 @@
         <thead>
             <tr>
                 <th style="width: 5%;">No</th>
-                <th style="width: 15%;">Tanggal</th>
+                <th style="width: 25%;">
+                    @if(($filterType ?? 'daily') === 'weekly')
+                        Minggu Ke (ISO)
+                    @elseif(($filterType ?? 'daily') === 'monthly')
+                        Bulan
+                    @elseif(($filterType ?? 'daily') === 'yearly')
+                        Tahun
+                    @else
+                        Tanggal
+                    @endif
+                </th>
                 <th style="width: 10%;">Transaksi</th>
                 <th style="width: 10%;">Item</th>
                 <th>Pendapatan</th>
@@ -157,10 +167,16 @@
             @forelse($rows as $i => $r)
                 @php
                     $day_profit = (int)$r->makanan_profit + (int)$r->minuman_profit + (int)$r->tambahan_profit;
+                    $periodeDisplay = $r->tgl;
+                    if (($filterType ?? 'daily') === 'daily') {
+                        $periodeDisplay = \Carbon\Carbon::parse($r->tgl)->format('d M Y');
+                    } elseif (($filterType ?? 'daily') === 'monthly') {
+                        $periodeDisplay = \Carbon\Carbon::parse($r->tgl . '-01')->translatedFormat('F Y');
+                    }
                 @endphp
                 <tr>
                     <td class="text-center">{{ $i + 1 }}</td>
-                    <td class="text-center">{{ \Carbon\Carbon::parse($r->tgl)->format('d M Y') }}</td>
+                    <td class="text-center">{{ $periodeDisplay }}</td>
                     <td class="text-right">{{ (int) $r->total_transaksi }}</td>
                     <td class="text-right">{{ (int) $r->total_item }}</td>
                     <td class="text-right">Rp {{ number_format((int) $r->total_pendapatan, 0, ',', '.') }}</td>

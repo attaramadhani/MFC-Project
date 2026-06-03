@@ -14,7 +14,7 @@
     </div>
 
     <a class="btn btn-sm btn-outline-secondary"
-       href="{{ route('admin.reports.export', ['from' => $from, 'to' => $to]) }}"
+       href="{{ route('admin.reports.export', ['from' => $from, 'to' => $to, 'filter_type' => $filterType]) }}"
        target="_blank">
         Export PDF
     </a>
@@ -23,6 +23,16 @@
 <div class="card shadow-sm border-0 rounded-4 mb-3">
     <div class="card-body">
         <form method="GET" action="{{ route('admin.reports.index') }}" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small mb-1">Tipe Filter</label>
+                <select name="filter_type" class="form-select form-select-sm">
+                    <option value="daily" {{ $filterType === 'daily' ? 'selected' : '' }}>Harian / Kustom</option>
+                    <option value="weekly" {{ $filterType === 'weekly' ? 'selected' : '' }}>Mingguan</option>
+                    <option value="monthly" {{ $filterType === 'monthly' ? 'selected' : '' }}>Bulanan</option>
+                    <option value="yearly" {{ $filterType === 'yearly' ? 'selected' : '' }}>Tahunan</option>
+                </select>
+            </div>
+
             <div class="col-md-3">
                 <label class="form-label small mb-1">Dari</label>
                 <input type="date" name="from" class="form-control form-control-sm" value="{{ $from }}">
@@ -33,7 +43,7 @@
                 <input type="date" name="to" class="form-control form-control-sm" value="{{ $to }}">
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <button class="btn btn-sm btn-main text-white w-100">Tampilkan</button>
             </div>
         </form>
@@ -92,7 +102,17 @@
             <table class="table table-hover align-middle">
                 <thead class="small text-muted">
                     <tr>
-                        <th>Tanggal</th>
+                        <th>
+                            @if($filterType === 'weekly')
+                                Minggu Ke (ISO)
+                            @elseif($filterType === 'monthly')
+                                Bulan
+                            @elseif($filterType === 'yearly')
+                                Tahun
+                            @else
+                                Tanggal
+                            @endif
+                        </th>
                         <th class="text-end">Transaksi</th>
                         <th class="text-end">Total Item</th>
                         <th class="text-end">Pendapatan</th>
@@ -106,9 +126,16 @@
                     @forelse($rows as $r)
                         @php
                             $day_profit = (int)$r->makanan_profit + (int)$r->minuman_profit + (int)$r->tambahan_profit;
+                            // Format Tanggal / Periode
+                            $periodeDisplay = $r->tgl;
+                            if ($filterType === 'daily') {
+                                $periodeDisplay = \Carbon\Carbon::parse($r->tgl)->format('d M Y');
+                            } elseif ($filterType === 'monthly') {
+                                $periodeDisplay = \Carbon\Carbon::parse($r->tgl . '-01')->translatedFormat('F Y');
+                            }
                         @endphp
                         <tr>
-                            <td>{{ \Carbon\Carbon::parse($r->tgl)->format('d M Y') }}</td>
+                            <td>{{ $periodeDisplay }}</td>
                             <td class="text-end">{{ (int) $r->total_transaksi }}</td>
                             <td class="text-end">{{ (int) $r->total_item }}</td>
                             <td class="text-end">Rp {{ number_format((int) $r->total_pendapatan, 0, ',', '.') }}</td>

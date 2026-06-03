@@ -11,20 +11,44 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $defaultFrom = now()->subDays(6)->toDateString();
+        $defaultFrom = now()->subDays(29)->toDateString();
         $defaultTo = now()->toDateString();
 
         $from = request('from', $defaultFrom);
         $to = request('to', $defaultTo);
+        $filterType = request('filter_type', 'daily'); // daily, weekly, monthly, yearly
 
         if ($from > $to) {
             [$from, $to] = [$to, $from];
         }
 
+        // Tentukan format grouping tanggal untuk PostgreSQL
+        // daily: YYYY-MM-DD
+        // weekly: YYYY-"W"IW (Year and ISO Week)
+        // monthly: YYYY-MM
+        // yearly: YYYY
+        $dateSelect = "CAST(p.paid_at AS DATE) AS tgl";
+        $groupBy = "CAST(p.paid_at AS DATE)";
+        $orderBy = "tgl ASC";
+
+        if ($filterType === 'weekly') {
+            $dateSelect = "TO_CHAR(p.paid_at, 'YYYY-\"W\"IW') AS tgl";
+            $groupBy = "TO_CHAR(p.paid_at, 'YYYY-\"W\"IW')";
+            $orderBy = "tgl ASC";
+        } elseif ($filterType === 'monthly') {
+            $dateSelect = "TO_CHAR(p.paid_at, 'YYYY-MM') AS tgl";
+            $groupBy = "TO_CHAR(p.paid_at, 'YYYY-MM')";
+            $orderBy = "tgl ASC";
+        } elseif ($filterType === 'yearly') {
+            $dateSelect = "TO_CHAR(p.paid_at, 'YYYY') AS tgl";
+            $groupBy = "TO_CHAR(p.paid_at, 'YYYY')";
+            $orderBy = "tgl ASC";
+        }
+
         $rows = DB::select("
             SELECT 
-                CAST(p.paid_at AS DATE) AS tgl,
-                COUNT(*) AS total_transaksi,
+                {$dateSelect},
+                COUNT(p.id_pesanan) AS total_transaksi,
                 SUM(p.total_harga) AS total_pendapatan,
                 SUM(oi.total_item) AS total_item,
                 SUM(oi.makanan_qty) AS makanan_qty,
@@ -50,8 +74,8 @@ class ReportController extends Controller
             ) oi ON oi.id_pesanan = p.id_pesanan
             WHERE p.payment_status = 'paid'
               AND CAST(p.paid_at AS DATE) BETWEEN ? AND ?
-            GROUP BY CAST(p.paid_at AS DATE)
-            ORDER BY tgl ASC
+            GROUP BY {$groupBy}
+            ORDER BY {$orderBy}
         ", [$from, $to]);
 
         $totalPendapatan = 0;
@@ -80,6 +104,7 @@ class ReportController extends Controller
             'rows',
             'from',
             'to',
+            'filterType',
             'totalPendapatan',
             'totalTransaksi',
             'totalItem',
@@ -94,20 +119,39 @@ class ReportController extends Controller
 
     public function export()
     {
-        $defaultFrom = now()->subDays(6)->toDateString();
+        $defaultFrom = now()->subDays(29)->toDateString();
         $defaultTo = now()->toDateString();
 
         $from = request('from', $defaultFrom);
         $to = request('to', $defaultTo);
+        $filterType = request('filter_type', 'daily');
 
         if ($from > $to) {
             [$from, $to] = [$to, $from];
         }
 
+        $dateSelect = "CAST(p.paid_at AS DATE) AS tgl";
+        $groupBy = "CAST(p.paid_at AS DATE)";
+        $orderBy = "tgl ASC";
+
+        if ($filterType === 'weekly') {
+            $dateSelect = "TO_CHAR(p.paid_at, 'YYYY-\"W\"IW') AS tgl";
+            $groupBy = "TO_CHAR(p.paid_at, 'YYYY-\"W\"IW')";
+            $orderBy = "tgl ASC";
+        } elseif ($filterType === 'monthly') {
+            $dateSelect = "TO_CHAR(p.paid_at, 'YYYY-MM') AS tgl";
+            $groupBy = "TO_CHAR(p.paid_at, 'YYYY-MM')";
+            $orderBy = "tgl ASC";
+        } elseif ($filterType === 'yearly') {
+            $dateSelect = "TO_CHAR(p.paid_at, 'YYYY') AS tgl";
+            $groupBy = "TO_CHAR(p.paid_at, 'YYYY')";
+            $orderBy = "tgl ASC";
+        }
+
         $rows = DB::select("
             SELECT 
-                CAST(p.paid_at AS DATE) AS tgl,
-                COUNT(*) AS total_transaksi,
+                {$dateSelect},
+                COUNT(p.id_pesanan) AS total_transaksi,
                 SUM(p.total_harga) AS total_pendapatan,
                 SUM(oi.total_item) AS total_item,
                 SUM(oi.makanan_qty) AS makanan_qty,
@@ -133,8 +177,8 @@ class ReportController extends Controller
             ) oi ON oi.id_pesanan = p.id_pesanan
             WHERE p.payment_status = 'paid'
               AND CAST(p.paid_at AS DATE) BETWEEN ? AND ?
-            GROUP BY CAST(p.paid_at AS DATE)
-            ORDER BY tgl ASC
+            GROUP BY {$groupBy}
+            ORDER BY {$orderBy}
         ", [$from, $to]);
 
         $totalPendapatan = 0;
@@ -165,6 +209,7 @@ class ReportController extends Controller
             'rows',
             'from',
             'to',
+            'filterType',
             'totalPendapatan',
             'totalTransaksi',
             'totalItem',
