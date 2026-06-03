@@ -146,16 +146,39 @@ class DummyTransactionSeeder extends Seeder
         ];
 
         $menuMap = $menus->keyBy('id_menu');
+        $menuIds = $menus->pluck('id_menu')->toArray();
 
-        foreach ($transactions as $idx => $tx) {
-            $userId  = $buyerIds[$tx['buyer_idx']];
-            $wilayah = $tx['wilayah'];
+        $wilayahList = ['Kamal', 'Telang', 'Socah'];
+        $ongkirMap   = ['Kamal' => 3000, 'Telang' => 5000, 'Socah' => 10000];
+
+        // Generate 115 random transactions to ensure > 100 orders
+        $totalToGenerate = 115;
+
+        for ($i = 0; $i < $totalToGenerate; $i++) {
+            $buyerIdx = array_rand($buyerIds);
+            $userId  = $buyerIds[$buyerIdx];
+            $wilayah = $wilayahList[array_rand($wilayahList)];
             $ongkir  = $ongkirMap[$wilayah];
-            $baseDate = Carbon::now()->subDays($tx['days_ago']);
+            
+            // Random days ago between 0 to 60 days ago
+            $daysAgo = rand(0, 60);
+            $baseDate = Carbon::now()->subDays($daysAgo)->subHours(rand(0, 23))->subMinutes(rand(0, 59));
+
+            // Pick 1 to 4 random menu items
+            $numItems = rand(1, 4);
+            $selectedMenus = array_rand(array_flip($menuIds), min($numItems, count($menuIds)));
+            if (!is_array($selectedMenus)) {
+                $selectedMenus = [$selectedMenus];
+            }
+
+            $items = [];
+            foreach ($selectedMenus as $menuId) {
+                $items[] = [$menuId, rand(1, 3)]; // Qty 1-3
+            }
 
             // Calculate total
             $subtotal = 0;
-            foreach ($tx['items'] as [$menuId, $qty]) {
+            foreach ($items as [$menuId, $qty]) {
                 if (isset($menuMap[$menuId])) {
                     $menu = $menuMap[$menuId];
                     $hargaJual = $menu->harga;
@@ -166,13 +189,14 @@ class DummyTransactionSeeder extends Seeder
             }
             $totalHarga = $subtotal + $ongkir;
 
-            $kode = 'MFC-DUMMY-' . str_pad($idx + 1, 3, '0', STR_PAD_LEFT);
+            // Use unique prefix for these generated dummy transactions
+            $kode = 'MFC-GEN-' . str_pad($i + 1, 4, '0', STR_PAD_LEFT);
 
-            $paidAt = in_array($tx['payment'], ['paid']) ? $baseDate->copy()->addMinutes(5) : null;
-            $processedAt = in_array($tx['order'], ['processing', 'ready', 'completed']) ? $baseDate->copy()->addMinutes(10) : null;
-            $readyAt = in_array($tx['order'], ['ready', 'completed']) ? $baseDate->copy()->addMinutes(20) : null;
-            $completedAt = $tx['order'] === 'completed' ? $baseDate->copy()->addMinutes(35) : null;
-            $canceledAt = $tx['order'] === 'canceled' ? $baseDate->copy()->addMinutes(15) : null;
+            $paymentMethod = rand(0, 1) ? 'midtrans' : 'cod';
+            $paidAt = $baseDate->copy()->addMinutes(rand(2, 15));
+            $processedAt = $paidAt->copy()->addMinutes(rand(5, 10));
+            $readyAt = $processedAt->copy()->addMinutes(rand(10, 20));
+            $completedAt = $readyAt->copy()->addMinutes(rand(15, 30));
 
             // Check if already exists
             if (DB::table('pesanan')->where('kode_pesanan', $kode)->exists()) {
@@ -183,24 +207,24 @@ class DummyTransactionSeeder extends Seeder
                 'id_user'            => $userId,
                 'kode_pesanan'       => $kode,
                 'total_harga'        => $totalHarga,
-                'payment_status'     => $tx['payment'],
-                'order_status'       => $tx['order'],
-                'stok_dikurangi'     => DB::raw($tx['payment'] === 'paid' ? 'TRUE' : 'FALSE'),
-                'alamat_pengiriman'  => 'Jl. Dummy No. ' . ($idx + 1) . ', ' . $wilayah,
+                'payment_status'     => 'paid',
+                'order_status'       => 'completed',
+                'stok_dikurangi'     => DB::raw('TRUE'),
+                'alamat_pengiriman'  => 'Jl. Random No. ' . ($i + 1) . ', ' . $wilayah,
                 'wilayah_pengiriman' => $wilayah,
                 'ongkir'             => $ongkir,
-                'payment_method'     => $tx['method'],
+                'payment_method'     => $paymentMethod,
                 'created_at'         => $baseDate,
-                'updated_at'         => $baseDate,
+                'updated_at'         => $completedAt,
                 'paid_at'            => $paidAt,
                 'processed_at'       => $processedAt,
                 'ready_at'           => $readyAt,
                 'completed_at'       => $completedAt,
-                'canceled_at'        => $canceledAt,
+                'canceled_at'        => null,
             ], 'id_pesanan');
 
             // Insert detail_pesanan
-            foreach ($tx['items'] as [$menuId, $qty]) {
+            foreach ($items as [$menuId, $qty]) {
                 if (isset($menuMap[$menuId])) {
                     $menu = $menuMap[$menuId];
                     $hargaJual = $menu->harga;
@@ -221,25 +245,23 @@ class DummyTransactionSeeder extends Seeder
                 }
             }
 
-            // Insert pembayaran record for paid orders
-            if ($tx['payment'] === 'paid' || $tx['payment'] === 'pending') {
-                DB::table('pembayaran')->insert([
-                    'id_pesanan'              => $pesananId,
-                    'provider'                => $tx['method'] === 'cod' ? 'cod' : 'midtrans',
-                    'metode'                  => $tx['method'] === 'cod' ? 'cash' : 'bank_transfer',
-                    'gross_amount'            => $totalHarga,
-                    'status'                  => $tx['payment'] === 'paid' ? 'paid' : 'pending',
-                    'transaction_time'        => $baseDate,
-                    'settlement_time'         => $tx['payment'] === 'paid' ? $paidAt : null,
-                    'provider_order_id'       => $kode,
-                    'provider_transaction_id' => 'DUMMY-TXN-' . str_pad($idx + 1, 3, '0', STR_PAD_LEFT),
-                    'raw_response'            => json_encode(['dummy' => true]),
-                    'created_at'              => $baseDate,
-                    'updated_at'              => $paidAt ?? $baseDate,
-                ]);
-            }
+            // Insert pembayaran record
+            DB::table('pembayaran')->insert([
+                'id_pesanan'              => $pesananId,
+                'provider'                => $paymentMethod === 'cod' ? 'cod' : 'midtrans',
+                'metode'                  => $paymentMethod === 'cod' ? 'cash' : 'bank_transfer',
+                'gross_amount'            => $totalHarga,
+                'status'                  => 'paid',
+                'transaction_time'        => $baseDate,
+                'settlement_time'         => $paidAt,
+                'provider_order_id'       => $kode,
+                'provider_transaction_id' => 'GEN-TXN-' . str_pad($i + 1, 4, '0', STR_PAD_LEFT),
+                'raw_response'            => json_encode(['dummy' => true]),
+                'created_at'              => $baseDate,
+                'updated_at'              => $paidAt,
+            ]);
         }
 
-        echo "Dummy transactions seeded successfully!\n";
+        echo "Over 100 random paid dummy transactions generated and seeded successfully!\n";
     }
 }

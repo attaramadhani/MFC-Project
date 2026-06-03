@@ -77,3 +77,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 });
 
 Route::post('/midtrans/notification', [MidtransController::class, 'notification'])->name('midtrans.notification');
+
+Route::get('/seed-dummy-temp', function() {
+    try {
+        $seeder = new \Database\Seeders\DummyTransactionSeeder();
+        $seeder->run();
+        return response()->json(['status' => 'success', 'message' => 'Seeded over 100 random transactions!']);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+});
