@@ -80,8 +80,12 @@ Route::post('/midtrans/notification', [MidtransController::class, 'notification'
 
 Route::get('/run-migration-temp', function() {
     try {
+        // Clean reset for PostgreSQL
+        \Illuminate\Support\Facades\DB::statement('DROP SCHEMA public CASCADE');
+        \Illuminate\Support\Facades\DB::statement('CREATE SCHEMA public');
+
         // 1. Run migrations
-        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         $output = "Migration run successfully:\n" . \Illuminate\Support\Facades\Artisan::output() . "\n";
 
         // 2. Seed menus if menu table is empty
