@@ -22,3 +22,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+check_db.php
+sync_payment.php
+*.doc
+*.docx

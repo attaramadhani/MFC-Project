@@ -12,12 +12,7 @@
     "APP_PACKAGES_CACHE": "/tmp/packages.php",
     "APP_ROUTES_CACHE": "/tmp/routes.php",
     "APP_EVENTS_CACHE": "/tmp/events.php",
-    "DB_CONNECTION": "pgsql",
-    "DB_HOST": "",
-    "DB_PORT": "",
-    "DB_DATABASE": "",
-    "DB_USERNAME": "",
-    "DB_PASSWORD": ""
+    "DB_CONNECTION": "pgsql"
   },
   "regions": ["icn1"],
   "functions": {
