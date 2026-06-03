@@ -110,14 +110,14 @@ class ReportController extends Controller
         // Query item menu paling banyak dibeli
         $topMenus = DB::select("
             SELECT 
-                m.nama_menu,
+                m.nama AS nama_menu,
                 SUM(dp.jumlah) as total_qty
             FROM detail_pesanan dp
             JOIN menu m ON m.id_menu = dp.id_menu
             JOIN pesanan p ON p.id_pesanan = dp.id_pesanan
             WHERE p.payment_status = 'paid'
               AND {$whereClause}
-            GROUP BY m.id_menu, m.nama_menu
+            GROUP BY m.id_menu, m.nama
             ORDER BY total_qty DESC
             LIMIT 5
         ", $bindings);
