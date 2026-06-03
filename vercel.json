@@ -3,7 +3,19 @@
   "framework": null,
   "functions": {
     "api/index.php": {
-      "runtime": "vercel-php@0.7.2"
+      "runtime": "vercel-php@0.7.2",
+      "excludeFiles": [
+        "node_modules/**/*",
+        "public/img/**/*",
+        "tests/**/*",
+        ".git/**/*",
+        ".github/**/*",
+        ".history/**/*",
+        "storage/logs/**/*",
+        "storage/framework/cache/**/*",
+        "storage/framework/sessions/**/*",
+        "storage/framework/views/**/*"
+      ]
     }
   },
   "routes": [
