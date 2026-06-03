@@ -11,7 +11,10 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
         `;
 
-        fetch('/pelanggan/cart/content', {
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content') || '';
+        const url = (baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl) + '/pelanggan/cart/content';
+
+        fetch(url, {
             method: 'GET',
             credentials: 'same-origin',
             headers: {
@@ -33,10 +36,4 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
-
-document.addEventListener('click', function (e) {
-    const btnCheckout = e.target.closest('#btn-modal-checkout');
-    if (!btnCheckout) return;
-
-    window.location.href = 'pelanggan/checkout';
-});
+

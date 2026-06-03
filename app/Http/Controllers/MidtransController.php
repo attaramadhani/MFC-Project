@@ -137,6 +137,16 @@ class MidtransController extends Controller
                     : now();
             }
 
+            if (in_array($newPesananStatus, ['expired', 'failed', 'refunded'], true) && $pesanan->stok_dikurangi) {
+                $items = DB::table('detail_pesanan')->where('id_pesanan', $id_pesanan)->get();
+                foreach ($items as $item) {
+                    DB::table('menu')
+                        ->where('id_menu', $item->id_menu)
+                        ->increment('stok', $item->jumlah);
+                }
+                $updatePesanan['stok_dikurangi'] = 0;
+            }
+
             DB::table('pesanan')
                 ->where('id_pesanan', $id_pesanan)
                 ->update($updatePesanan);

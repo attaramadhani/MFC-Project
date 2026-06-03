@@ -10,7 +10,9 @@
                 @php
                     $idMenu   = (int) $row->id_menu;
                     $jumlah   = (int) $row->jumlah;
-                    $harga    = (int) $row->harga;
+                    $hargaOriginal = (int) $row->harga;
+                    $diskonPercent = (int) ($row->diskon ?? 0);
+                    $harga    = $hargaOriginal - ($hargaOriginal * $diskonPercent / 100);
                     $subtotal = $jumlah * $harga;
                 @endphp
 
@@ -24,7 +26,11 @@
                             data-id="{{ $idMenu }}"
                             data-price="{{ $harga }}"
                         >
-                            x {{ $jumlah }} • Rp {{ number_format($harga, 0, ',', '.') }}
+                            x {{ $jumlah }} • 
+                            @if($diskonPercent > 0)
+                                <span class="text-decoration-line-through text-muted small">Rp {{ number_format($hargaOriginal, 0, ',', '.') }}</span>
+                            @endif
+                            Rp {{ number_format($harga, 0, ',', '.') }}
                         </div>
                     </div>
 
@@ -69,13 +75,13 @@
             </div>
 
             <div class="cart-modal-summary-right">
-                <button
-                    type="button"
+                <a
+                    href="{{ route('pelanggan.checkout') }}"
                     class="btn btn-main text-white rounded-pill"
                     id="btn-modal-checkout"
                 >
                     Checkout
-                </button>
+                </a>
             </div>
         </div>
     </div>

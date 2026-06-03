@@ -84,36 +84,64 @@
                       @endif
                   </div>
 
-                  <div class="card-body menu-card-body">
+                  <div class="card-body menu-card-body d-flex flex-column h-100">
                       <div class="d-flex justify-content-between align-items-start mb-2">
-                      <div>
-                          <h5 class="card-title mb-1" style="font-size:1rem;">
-                          <?= htmlspecialchars($menu['nama']) ?>
-                          </h5>
-                      </div>
-                      <span class="badge bg-warning-subtle text-warning-emphasis badge-kategori">
-                          <?= htmlspecialchars($menu['kategori']) ?>
-                      </span>
+                        <div>
+                            <h5 class="card-title mb-1" style="font-size:1rem;">
+                            <?= htmlspecialchars($menu['nama']) ?>
+                            </h5>
+                        </div>
+                        <div class="d-flex flex-column align-items-end gap-1">
+                          <span class="badge bg-warning-subtle text-warning-emphasis badge-kategori">
+                              <?= htmlspecialchars($menu['kategori']) ?>
+                          </span>
+                          <?php if (!empty($menu['diskon']) && $menu['diskon'] > 0): ?>
+                            <span class="badge bg-danger text-white rounded-pill" style="font-size: 0.7rem;">Diskon <?= $menu['diskon'] ?>%</span>
+                          <?php endif; ?>
+                        </div>
                       </div>
 
-                      <p class="card-text small text-muted mb-3">
+                      <p class="card-text small text-muted mb-2">
                       <?= nl2br(htmlspecialchars($menu['deskripsi'] ?? '')) ?>
                       </p>
 
-                      <div class="menu-card-footer">
-                      <div class="fw-bold text-orange">
-                          Rp <?= number_format($menu['harga'], 0, ',', '.') ?>
+                      <div class="mb-3 d-flex justify-content-between align-items-center">
+                        <span class="small text-muted">
+                          <?php if ($menu['stok'] <= 0): ?>
+                            <span class="text-danger fw-bold">Stok Habis</span>
+                          <?php else: ?>
+                            Stok: <span class="fw-semibold text-success"><?= $menu['stok'] ?></span>
+                          <?php endif; ?>
+                        </span>
                       </div>
 
-                          <div class="qty-control" data-id="<?= $idMenu ?>">
-                      <button class="qty-btn guest-trigger" 
-                              type="button"
-                              data-id="<?= $idMenu ?>">−</button>
-                      <span class="qty-value" data-id="<?= $idMenu ?>">0</span>
-                      <button class="qty-btn guest-trigger" 
-                              type="button"
-                              data-id="<?= $idMenu ?>">+</button>
-                    </div>
+                      <div class="menu-card-footer mt-auto">
+                        <div class="fw-bold text-orange">
+                          <?php if (!empty($menu['diskon']) && $menu['diskon'] > 0): 
+                            $finalHarga = $menu['harga'] - ($menu['harga'] * $menu['diskon'] / 100);
+                          ?>
+                            <span class="text-muted text-decoration-line-through me-1 small" style="font-size: 0.8rem;">
+                              Rp <?= number_format($menu['harga'], 0, ',', '.') ?>
+                            </span><br>
+                            Rp <?= number_format($finalHarga, 0, ',', '.') ?>
+                          <?php else: ?>
+                            Rp <?= number_format($menu['harga'], 0, ',', '.') ?>
+                          <?php endif; ?>
+                        </div>
+
+                        <div class="qty-control" data-id="<?= $idMenu ?>">
+                          <?php if ($menu['stok'] <= 0): ?>
+                            <span class="badge bg-secondary">Habis</span>
+                          <?php else: ?>
+                            <button class="qty-btn guest-trigger" 
+                                    type="button"
+                                    data-id="<?= $idMenu ?>">−</button>
+                            <span class="qty-value" data-id="<?= $idMenu ?>">0</span>
+                            <button class="qty-btn guest-trigger" 
+                                    type="button"
+                                    data-id="<?= $idMenu ?>">+</button>
+                          <?php endif; ?>
+                        </div>
                       </div>
                   </div>
                   </div>

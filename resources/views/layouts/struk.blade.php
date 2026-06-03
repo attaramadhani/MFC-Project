@@ -148,10 +148,10 @@
   <div class="receipt-inner">
 
     <div class="receipt-header">
-        <div class="resto-name">Geprekin Aja</div>
+        <div class="resto-name">MFC (Madris Fried Chicken)</div>
         <div class="resto-info">
-            Jl. Trunojoyo No.28, Banyu Ajuh, Kec. Kamal, Kabupaten Bangkalan<br>
-            Telp: +62 896-6798-1666
+            Jl. Trunojoyo, Dajahjarad, Banyu Ajuh, Kec. Kamal, Kabupaten Bangkalan, Jawa Timur 69162, tepatnya berada di seberang depan Masjid Al Ihsan<br>
+            Telp: +62 857-3112-2725
         </div>
     </div>
 

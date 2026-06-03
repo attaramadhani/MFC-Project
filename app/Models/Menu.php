@@ -15,6 +15,7 @@ class Menu extends Model
         'kategori',
         'deskripsi',
         'harga',
+        'is_paket',
         'gambar',
     ];
 }

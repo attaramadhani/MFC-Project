@@ -31,6 +31,7 @@
                   <option value="">-- Pilih Wilayah --</option>
                   <option value="Kamal">Kamal</option>
                   <option value="Telang">Telang</option>
+                  <option value="Socah">Socah</option>
                 </select>
                 <div class="form-text">Ongkir dihitung berdasarkan wilayah.</div>
               </div>
@@ -71,11 +72,26 @@
                 </thead>
                 <tbody>
                   @foreach ($items as $item)
+                    @php
+                      $harga_jual = (int) $item->harga;
+                      $diskon_persen = (int) ($item->diskon ?? 0);
+                      $harga_final = $harga_jual - ($harga_jual * $diskon_persen / 100);
+                    @endphp
                     <tr>
-                      <td>{{ $item->nama }}</td>
+                      <td>
+                        {{ $item->nama }}
+                        @if($diskon_persen > 0)
+                          <span class="badge bg-danger text-white rounded-pill ms-2" style="font-size:0.7rem;">Diskon {{ $diskon_persen }}%</span>
+                        @endif
+                      </td>
                       <td class="text-center">{{ (int) $item->jumlah }}</td>
-                      <td>Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
-                      <td>Rp {{ number_format($item->jumlah * $item->harga, 0, ',', '.') }}</td>
+                      <td>
+                        @if($diskon_persen > 0)
+                          <span class="text-decoration-line-through text-muted small">Rp {{ number_format($harga_jual, 0, ',', '.') }}</span><br>
+                        @endif
+                        Rp {{ number_format($harga_final, 0, ',', '.') }}
+                      </td>
+                      <td>Rp {{ number_format($item->jumlah * $harga_final, 0, ',', '.') }}</td>
                     </tr>
                   @endforeach
                 </tbody>
@@ -126,8 +142,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const token = document.querySelector('meta[name="csrf-token"]');
 
   const ONGKIR_MAP = {
-    Kamal: 1000,
-    Telang: 3000
+    Kamal: 3000,
+    Telang: 5000,
+    Socah: 10000
   };
 
   const subtotal = {{ (int) $total }};
@@ -209,13 +226,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
         window.snap.pay(data.token, {
             onSuccess: function () {
-            window.location.href = '{{ route('pelanggan.orders.index') }}';
+              window.location.href = "{{ route('pelanggan.orders.check', ':id') }}".replace(':id', data.id_pesanan);
             },
             onPending: function () {
-            window.location.href = '{{ route('pelanggan.orders.index') }}';
+              window.location.href = "{{ route('pelanggan.orders.check', ':id') }}".replace(':id', data.id_pesanan);
             },
             onError: function () {
-            alert('Terjadi kesalahan saat pembayaran.');
+              alert('Terjadi kesalahan saat pembayaran.');
+            },
+            onClose: function () {
+              window.location.href = "{{ route('pelanggan.orders.check', ':id') }}".replace(':id', data.id_pesanan);
             }
         });
         })

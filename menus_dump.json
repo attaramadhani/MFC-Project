@@ -1,0 +1,142 @@
+[
+    {
+        "id_menu": 14,
+        "nama": "PAKET HAJAT",
+        "deskripsi": "Nasi + Dada Jumbo + Tahu + Lalapan",
+        "harga": "15000.00",
+        "is_paket": 1,
+        "kategori": "paket",
+        "gambar": "menu_1777368637_9134.png",
+        "dibuat_pada": "2026-04-28 16:30:37"
+    },
+    {
+        "id_menu": 15,
+        "nama": "PAKET HEMAT 1",
+        "deskripsi": "Nasi + Sayap + Lalapan + Tahu Tempe",
+        "harga": "13000.00",
+        "is_paket": 1,
+        "kategori": "paket",
+        "gambar": "menu_1777369436_4699.png",
+        "dibuat_pada": "2026-04-28 16:31:45"
+    },
+    {
+        "id_menu": 16,
+        "nama": "PAKET HEMAT 2",
+        "deskripsi": "Nasi + Paha + Tahu Tempe + Lalapan + Teh manis",
+        "harga": "15000.00",
+        "is_paket": 1,
+        "kategori": "paket",
+        "gambar": "menu_1777369654_3666.png",
+        "dibuat_pada": "2026-04-28 16:47:34"
+    },
+    {
+        "id_menu": 17,
+        "nama": "PAKET HEMAT 3",
+        "deskripsi": "Nasi + Dada + Tahu Tempe + Lalapan + Teh manis",
+        "harga": "15000.00",
+        "is_paket": 1,
+        "kategori": "paket",
+        "gambar": "menu_1777369774_3145.png",
+        "dibuat_pada": "2026-04-28 16:49:34"
+    },
+    {
+        "id_menu": 18,
+        "nama": "LELE CRISPY",
+        "deskripsi": "Lele Crispy",
+        "harga": "10000.00",
+        "is_paket": 0,
+        "kategori": "makanan",
+        "gambar": "menu_1777370235_1909.png",
+        "dibuat_pada": "2026-04-28 16:57:15"
+    },
+    {
+        "id_menu": 19,
+        "nama": "SAYAP AYAM",
+        "deskripsi": "Sayap Ayam",
+        "harga": "10000.00",
+        "is_paket": 0,
+        "kategori": "makanan",
+        "gambar": "menu_1777370555_9028.png",
+        "dibuat_pada": "2026-04-28 17:02:35"
+    },
+    {
+        "id_menu": 20,
+        "nama": "PAHA AYAM",
+        "deskripsi": "Paha Ayam",
+        "harga": "10000.00",
+        "is_paket": 0,
+        "kategori": "makanan",
+        "gambar": "menu_1777371042_8727.png",
+        "dibuat_pada": "2026-04-28 17:10:42"
+    },
+    {
+        "id_menu": 21,
+        "nama": "DADA AYAM",
+        "deskripsi": "Dada Ayam",
+        "harga": "10000.00",
+        "is_paket": 0,
+        "kategori": "makanan",
+        "gambar": "menu_1777371307_2208.png",
+        "dibuat_pada": "2026-04-28 17:15:07"
+    },
+    {
+        "id_menu": 22,
+        "nama": "DADA AYAM JUMBO",
+        "deskripsi": "Dada Ayam Jumbo",
+        "harga": "12000.00",
+        "is_paket": 0,
+        "kategori": "makanan",
+        "gambar": "menu_1777371506_6638.png",
+        "dibuat_pada": "2026-04-28 17:18:26"
+    },
+    {
+        "id_menu": 23,
+        "nama": "TAHU CRISPY",
+        "deskripsi": "Tahu Crispy Rp.500\/pcs",
+        "harga": "500.00",
+        "is_paket": 0,
+        "kategori": "makanan",
+        "gambar": "menu_1777371912_4907.png",
+        "dibuat_pada": "2026-04-28 17:25:12"
+    },
+    {
+        "id_menu": 24,
+        "nama": "USUS CRISPY",
+        "deskripsi": "Usus Crispy",
+        "harga": "5000.00",
+        "is_paket": 0,
+        "kategori": "makanan",
+        "gambar": "menu_1777372928_8304.png",
+        "dibuat_pada": "2026-04-28 17:42:08"
+    },
+    {
+        "id_menu": 25,
+        "nama": "ES TELER",
+        "deskripsi": "Es Teler",
+        "harga": "10000.00",
+        "is_paket": 0,
+        "kategori": "minuman",
+        "gambar": "menu_1777374305_3679.png",
+        "dibuat_pada": "2026-04-28 17:59:09"
+    },
+    {
+        "id_menu": 26,
+        "nama": "ES TEH",
+        "deskripsi": "ES TEH",
+        "harga": "3000.00",
+        "is_paket": 0,
+        "kategori": "minuman",
+        "gambar": "menu_1777374345_4814.png",
+        "dibuat_pada": "2026-04-28 18:05:45"
+    },
+    {
+        "id_menu": 27,
+        "nama": "Nasi",
+        "deskripsi": "Nasi kepal",
+        "harga": "4000.00",
+        "is_paket": 0,
+        "kategori": "makanan",
+        "gambar": "menu_1777771444_9930.png",
+        "dibuat_pada": "2026-05-03 08:24:04"
+    }
+]

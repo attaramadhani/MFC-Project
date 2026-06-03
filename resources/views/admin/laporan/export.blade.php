@@ -111,11 +111,11 @@
 <body>
     <div class="header">
         <div class="header-left">
-            <div class="brand-name">GeprekinAja</div>
+            <div class="brand-name">MFC (Madris Fried Chicken)</div>
             <div class="brand-tagline">Laporan Operasional & Penjualan</div>
             <div class="brand-info">
-                Jl. Trunojoyo No.28, Banyu Ajuh, Kec. Kamal, Kabupaten Bangkalan, Jawa Timur 69162<br>
-                Telp: 0896-6798-1666 · Email: geprekin@gmail.com
+                Jl. Trunojoyo, Dajahjarad, Banyu Ajuh, Kec. Kamal, Kabupaten Bangkalan, Jawa Timur 69162, tepatnya berada di seberang depan Masjid Al Ihsan<br>
+                Telp: 0857-3112-2725
             </div>
         </div>
         <div class="header-right">
@@ -144,24 +144,33 @@
         <thead>
             <tr>
                 <th style="width: 5%;">No</th>
-                <th style="width: 18%;">Tanggal</th>
-                <th style="width: 20%;">Jumlah Transaksi</th>
-                <th style="width: 20%;">Item Terjual</th>
-                <th>Pendapatan (Rp)</th>
+                <th style="width: 15%;">Tanggal</th>
+                <th style="width: 10%;">Transaksi</th>
+                <th style="width: 10%;">Item</th>
+                <th>Pendapatan</th>
+                <th>Keuntungan Makanan</th>
+                <th>Keuntungan Minuman</th>
+                <th>Total Keuntungan</th>
             </tr>
         </thead>
         <tbody>
             @forelse($rows as $i => $r)
+                @php
+                    $day_profit = (int)$r->makanan_profit + (int)$r->minuman_profit + (int)$r->tambahan_profit;
+                @endphp
                 <tr>
                     <td class="text-center">{{ $i + 1 }}</td>
                     <td class="text-center">{{ \Carbon\Carbon::parse($r->tgl)->format('d M Y') }}</td>
                     <td class="text-right">{{ (int) $r->total_transaksi }}</td>
                     <td class="text-right">{{ (int) $r->total_item }}</td>
                     <td class="text-right">Rp {{ number_format((int) $r->total_pendapatan, 0, ',', '.') }}</td>
+                    <td class="text-right">Rp {{ number_format((int) $r->makanan_profit, 0, ',', '.') }}</td>
+                    <td class="text-right">Rp {{ number_format((int) $r->minuman_profit, 0, ',', '.') }}</td>
+                    <td class="text-right">Rp {{ number_format($day_profit, 0, ',', '.') }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="text-center">Tidak ada transaksi pada periode ini.</td>
+                    <td colspan="8" class="text-center">Tidak ada transaksi pada periode ini.</td>
                 </tr>
             @endforelse
         </tbody>
@@ -173,6 +182,9 @@
                 <th class="text-right">{{ $totalTransaksi }}</th>
                 <th class="text-right">{{ $totalItem }}</th>
                 <th class="text-right">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</th>
+                <th class="text-right">Rp {{ number_format($totalMakananProfit, 0, ',', '.') }}</th>
+                <th class="text-right">Rp {{ number_format($totalMinumanProfit, 0, ',', '.') }}</th>
+                <th class="text-right">Rp {{ number_format($totalMakananProfit + $totalMinumanProfit + $totalTambahanProfit, 0, ',', '.') }}</th>
             </tr>
         </tfoot>
         @endif
@@ -185,6 +197,9 @@
             <tr><td>Total transaksi</td><td>:</td><td>{{ $totalTransaksi }} transaksi</td></tr>
             <tr><td>Total item terjual</td><td>:</td><td>{{ $totalItem }} item</td></tr>
             <tr><td>Total pendapatan</td><td>:</td><td>Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</td></tr>
+            <tr><td>Keuntungan Makanan</td><td>:</td><td>Rp {{ number_format($totalMakananProfit, 0, ',', '.') }}</td></tr>
+            <tr><td>Keuntungan Minuman</td><td>:</td><td>Rp {{ number_format($totalMinumanProfit, 0, ',', '.') }}</td></tr>
+            <tr><td>Total Keuntungan</td><td>:</td><td>Rp {{ number_format($totalMakananProfit + $totalMinumanProfit + $totalTambahanProfit, 0, ',', '.') }}</td></tr>
         </table>
     </div>
     @endif

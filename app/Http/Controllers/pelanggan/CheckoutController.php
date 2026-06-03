@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\pelanggan;
+namespace App\Http\Controllers\Pelanggan;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -20,12 +20,16 @@ class CheckoutController extends Controller
                 'k.id_menu',
                 'k.jumlah',
                 'm.nama',
-                'm.harga'
+                'm.harga',
+                'm.diskon',
             ]);
 
         $total = 0;
         foreach ($items as $item) {
-            $total += $item->jumlah * $item->harga;
+            $harga_jual = (int) $item->harga;
+            $diskon_persen = (int) ($item->diskon ?? 0);
+            $harga_final = $harga_jual - ($harga_jual * $diskon_persen / 100);
+            $total += $item->jumlah * $harga_final;
         }
 
         return view('pelanggan.checkout', [
@@ -112,6 +116,11 @@ class CheckoutController extends Controller
                 $kode_pesanan = $pesanan->kode_pesanan;
                 $oldPaymentStatus = $pesanan->payment_status ?? 'unpaid';
                 $payment_method = $pesanan->payment_method ?? $payment_method;
+                
+                // Jika wilayah baru tidak dikirim, gunakan ongkir yang sudah ada di pesanan
+                if ($wilayah_pengiriman === '' || $wilayah_pengiriman === $pesanan->wilayah_pengiriman) {
+                    $ongkir = (int) ($pesanan->ongkir ?? 0);
+                }
 
                 $items = DB::table('detail_pesanan as d')
                     ->join('menu as m', 'm.id_menu', '=', 'd.id_menu')
@@ -195,7 +204,10 @@ class CheckoutController extends Controller
                         'k.id_menu',
                         'k.jumlah',
                         'm.nama',
-                        'm.harga'
+                        'm.harga',
+                        'm.harga_beli',
+                        'm.diskon',
+                        'm.stok'
                     ]);
 
                 if ($items->isEmpty()) {
@@ -206,15 +218,29 @@ class CheckoutController extends Controller
                     ]);
                 }
 
+                // VALIDASI STOK
+                foreach ($items as $item) {
+                    if ($item->jumlah > $item->stok) {
+                        DB::rollBack();
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Stok "' . $item->nama . '" tidak mencukupi (Tersisa: ' . $item->stok . ' porsi).'
+                        ]);
+                    }
+                }
+
                 foreach ($items as $item) {
                     $qty = (int) $item->jumlah;
-                    $harga = (int) $item->harga;
-                    $subtotal = $qty * $harga;
+                    $harga_original = (int) $item->harga;
+                    $diskon_percent = (int) ($item->diskon ?? 0);
+                    $harga_final = $harga_original - ($harga_original * $diskon_percent / 100);
+
+                    $subtotal = $qty * $harga_final;
                     $subtotal_items += $subtotal;
 
                     $item_details[] = [
                         'id' => $item->id_menu,
-                        'price' => $harga,
+                        'price' => $harga_final,
                         'quantity' => $qty,
                         'name' => substr($item->nama, 0, 50),
                     ];
@@ -244,16 +270,25 @@ class CheckoutController extends Controller
                     'payment_method' => $payment_method,
                     'payment_status' => 'unpaid',
                     'order_status' => $order_status_awal,
+                    'stok_dikurangi' => 1,
                     'created_at' => now(),
                 ]);
 
                 foreach ($items as $item) {
+                    $diskon_amount = $item->harga * ($item->diskon ?? 0) / 100;
                     DB::table('detail_pesanan')->insert([
                         'id_pesanan' => $id_pesanan,
                         'id_menu' => $item->id_menu,
                         'jumlah' => $item->jumlah,
                         'harga' => $item->harga,
+                        'harga_beli' => $item->harga_beli,
+                        'diskon' => $diskon_amount,
                     ]);
+
+                    // Potong stok menu
+                    DB::table('menu')
+                        ->where('id_menu', $item->id_menu)
+                        ->decrement('stok', $item->jumlah);
                 }
 
                 DB::table('keranjang')
@@ -322,6 +357,8 @@ class CheckoutController extends Controller
             curl_setopt_array($ch, [
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_POST => true,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => 0,
                 CURLOPT_HTTPHEADER => [
                     'Content-Type: application/json',
                     'Accept: application/json',

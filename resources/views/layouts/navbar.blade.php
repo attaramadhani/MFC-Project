@@ -18,7 +18,7 @@ if (Auth::check()) {
         ->selectRaw('SUM(k.jumlah * m.harga) as total')
         ->value('total') ?? 0;
 
-    $uname = Auth::user()->nama_user ?? 'User';
+    $uname   = Auth::user()->nama_user ?? 'User';
     $initial = mb_strtoupper(mb_substr($uname, 0, 1));
 }
 @endphp
@@ -32,7 +32,6 @@ if (Auth::check()) {
     data-bs-target="#cartModal"
 >
     <span class="floating-cart-icon">🛒</span>
-
     <span
         class="floating-cart-badge {{ $cart_count > 0 ? '' : 'd-none' }}"
         id="cart-count-badge"
@@ -49,12 +48,13 @@ if (Auth::check()) {
         $homeUrl = auth()->check() ? route('pelanggan.index') : url('/');
     @endphp
 
-    <a class="navbar-brand" href="{{ $homeUrl }}#home">
-        GeprekinAja
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{{ $homeUrl }}">
+        <img src="{{ asset('img/logo.jpg') }}" alt="MFC Logo" height="36" class="rounded" style="object-fit: contain;">
+        MFC
     </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-      data-bs-target="#navbarNav">
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -68,6 +68,9 @@ if (Auth::check()) {
         <li class="nav-item">
           <a class="nav-link" href="{{ route('pelanggan.orders.index') }}">Pesanan</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('pelanggan.profile.index') }}">Profil</a>
+        </li>
         @endauth
 
         <li class="nav-item">
@@ -78,9 +81,9 @@ if (Auth::check()) {
         </li>
       </ul>
 
-      <ul class="navbar-nav ms-auto align-items-center">
+      <ul class="navbar-nav ms-auto align-items-center gap-2">
         @auth
-          <li class="nav-item me-2 d-none d-lg-block">
+          <li class="nav-item d-none d-lg-block">
             <div class="user-chip">
               <div class="user-avatar">{{ $initial }}</div>
               <span>{{ $uname }}</span>
@@ -90,15 +93,15 @@ if (Auth::check()) {
           <li class="nav-item">
             <form action="{{ route('logout') }}" method="POST">
               @csrf
-              <button type="submit" class="btn btn-sm btn-outline-secondary rounded-pill">
+              <button type="submit" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
                 Logout
               </button>
             </form>
           </li>
         @else
           <li class="nav-item">
-            <a href="{{ route('login') }}" class="btn btn-main text-white btn-sm rounded-pill">
-              Login
+            <a href="{{ route('login') }}" class="btn btn-main btn-sm">
+              Masuk
             </a>
           </li>
         @endauth
@@ -113,7 +116,7 @@ if (Auth::check()) {
     <div class="modal-content rounded-4">
 
       <div class="modal-header border-0 pb-0">
-        <h5 class="modal-title">Keranjang Pesanan</h5>
+        <h5 class="modal-title fw-bold">🛒 Keranjang Pesanan</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 

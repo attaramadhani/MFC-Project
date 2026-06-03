@@ -13,18 +13,6 @@
     </div>
 </div>
 
-@if(session('success'))
-    <div class="alert alert-success py-2">
-        {{ session('success') }}
-    </div>
-@endif
-
-@if(session('error'))
-    <div class="alert alert-danger py-2">
-        {{ session('error') }}
-    </div>
-@endif
-
 <div class="card shadow-sm border-0 rounded-4">
     <div class="card-body">
 

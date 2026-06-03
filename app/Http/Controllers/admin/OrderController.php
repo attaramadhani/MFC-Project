@@ -132,6 +132,15 @@ class OrderController extends Controller
                     break;
                 case 'canceled':
                     $update['canceled_at'] = now();
+                    if ($order->stok_dikurangi) {
+                        $items = DB::table('detail_pesanan')->where('id_pesanan', $id)->get();
+                        foreach ($items as $item) {
+                            DB::table('menu')
+                                ->where('id_menu', $item->id_menu)
+                                ->increment('stok', $item->jumlah);
+                        }
+                        $update['stok_dikurangi'] = 0;
+                    }
                     break;
             }
 

@@ -23,10 +23,14 @@ class MenuController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'kategori' => 'required|in:makanan,minuman,tambahan,geprek,crispy,gangnam',
+            'is_paket' => 'required|boolean',
+            'kategori' => 'required|in:makanan,minuman,paket,tambahan',
             'harga' => 'required|integer|min:0',
+            'harga_beli' => 'required|integer|min:0',
+            'stok' => 'required|integer|min:0',
+            'diskon' => 'nullable|integer|min:0|max:100',
             'deskripsi' => 'nullable|string',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp',
         ]);
 
         $gambar = null;
@@ -40,8 +44,12 @@ class MenuController extends Controller
 
         DB::table('menu')->insert([
             'nama' => $request->nama,
+            'is_paket' => (int) $request->is_paket,
             'kategori' => $request->kategori,
             'harga' => (int) $request->harga,
+            'harga_beli' => (int) $request->harga_beli,
+            'stok' => (int) $request->stok,
+            'diskon' => (int) ($request->diskon ?? 0),
             'deskripsi' => $request->deskripsi,
             'gambar' => $gambar,
         ]);
@@ -64,10 +72,14 @@ class MenuController extends Controller
 
         $request->validate([
             'nama' => 'required|string|max:255',
-            'kategori' => 'required|in:makanan,minuman,tambahan,geprek,crispy,gangnam',
+            'is_paket' => 'required|boolean',
+            'kategori' => 'required|in:makanan,minuman,paket,tambahan',
             'harga' => 'required|integer|min:0',
+            'harga_beli' => 'required|integer|min:0',
+            'stok' => 'required|integer|min:0',
+            'diskon' => 'nullable|integer|min:0|max:100',
             'deskripsi' => 'nullable|string',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp',
         ]);
 
         $gambar = $menu->gambar;
@@ -88,8 +100,12 @@ class MenuController extends Controller
             ->where('id_menu', $id)
             ->update([
                 'nama' => $request->nama,
+                'is_paket' => (int) $request->is_paket,
                 'kategori' => $request->kategori,
                 'harga' => (int) $request->harga,
+                'harga_beli' => (int) $request->harga_beli,
+                'stok' => (int) $request->stok,
+                'diskon' => (int) ($request->diskon ?? 0),
                 'deskripsi' => $request->deskripsi,
                 'gambar' => $gambar,
             ]);
@@ -101,6 +117,12 @@ class MenuController extends Controller
     {
         $menu = DB::table('menu')->where('id_menu', $id)->first();
         abort_if(!$menu, 404);
+
+        // Hapus data keranjang yang berisi menu ini
+        DB::table('keranjang')->where('id_menu', $id)->delete();
+
+        // Hapus riwayat pesanan (detail) yang terkait dengan menu ini
+        DB::table('detail_pesanan')->where('id_menu', $id)->delete();
 
         DB::table('menu')->where('id_menu', $id)->delete();
 

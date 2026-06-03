@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\pelanggan;
+namespace App\Http\Controllers\Pelanggan;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -22,16 +22,27 @@ class CartController extends Controller
             return redirect()->route('pelanggan.index');
         }
 
+        $menu = DB::table('menu')->where('id_menu', $id_menu)->first();
+        if (!$menu) {
+            return redirect()->route('pelanggan.index')->with('error', 'Menu tidak ditemukan.');
+        }
+
         $existing = DB::table('keranjang')
             ->where('id_user', $id_user)
             ->where('id_menu', $id_menu)
             ->first();
 
+        $requestedQty = $jumlah + ($existing ? $existing->jumlah : 0);
+
+        if ($requestedQty > $menu->stok) {
+            return redirect()->route('pelanggan.index')->with('error', 'Stok tidak mencukupi. Hanya tersisa ' . $menu->stok . ' porsi.');
+        }
+
         if ($existing) {
             DB::table('keranjang')
                 ->where('id_keranjang', $existing->id_keranjang)
                 ->update([
-                    'jumlah' => $existing->jumlah + $jumlah
+                    'jumlah' => $requestedQty
                 ]);
         } else {
             DB::table('keranjang')->insert([
@@ -41,7 +52,7 @@ class CartController extends Controller
             ]);
         }
 
-        return redirect()->route('pelanggan.index');
+        return redirect()->route('pelanggan.index')->with('success', 'Ditambahkan ke keranjang.');
     }
 
     public function update(Request $request)
@@ -69,12 +80,27 @@ class CartController extends Controller
             ->where('id_menu', $id_menu)
             ->first();
 
+        $menu = DB::table('menu')->where('id_menu', $id_menu)->first();
+        if (!$menu) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Menu tidak ditemukan.',
+            ]);
+        }
+
         $newQty = 0;
 
         if ($action === 'set') {
             $newQty = max(0, (int) $request->input('value', 0));
 
             if ($newQty > 0) {
+                if ($newQty > $menu->stok) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Stok tidak mencukupi. Tersisa ' . $menu->stok . ' porsi.',
+                    ]);
+                }
+
                 if ($row) {
                     DB::table('keranjang')
                         ->where('id_keranjang', $row->id_keranjang)
@@ -101,6 +127,12 @@ class CartController extends Controller
 
         if (!$row) {
             if ($action === 'plus') {
+                if ($menu->stok < 1) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Stok habis.',
+                    ]);
+                }
                 DB::table('keranjang')->insert([
                     'id_user' => $id_user,
                     'id_menu' => $id_menu,
@@ -123,6 +155,12 @@ class CartController extends Controller
             }
 
             if ($newQty > 0) {
+                if ($newQty > $menu->stok) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Stok tidak mencukupi. Tersisa ' . $menu->stok . ' porsi.',
+                    ]);
+                }
                 DB::table('keranjang')
                     ->where('id_keranjang', $row->id_keranjang)
                     ->update(['jumlah' => $newQty]);
@@ -155,6 +193,7 @@ class CartController extends Controller
                 'k.jumlah',
                 'm.nama',
                 'm.harga',
+                'm.diskon',
             ]);
 
         if ($items->isEmpty()) {
@@ -166,7 +205,10 @@ class CartController extends Controller
 
         $total_harga = 0;
         foreach ($items as $row) {
-            $total_harga += ((int) $row->jumlah * (int) $row->harga);
+            $harga_jual = (int) $row->harga;
+            $diskon_persen = (int) ($row->diskon ?? 0);
+            $harga_final = $harga_jual - ($harga_jual * $diskon_persen / 100);
+            $total_harga += ((int) $row->jumlah * $harga_final);
         }
 
         return view('pelanggan.core.cart_content', [
@@ -184,7 +226,7 @@ class CartController extends Controller
         $cart_total = (int) (DB::table('keranjang as k')
             ->join('menu as m', 'm.id_menu', '=', 'k.id_menu')
             ->where('k.id_user', $id_user)
-            ->selectRaw('SUM(k.jumlah * m.harga) as total_harga')
+            ->selectRaw('SUM(k.jumlah * (m.harga - (m.harga * m.diskon / 100))) as total_harga')
             ->value('total_harga') ?? 0);
 
         $item_subtotal = 0;
@@ -194,11 +236,14 @@ class CartController extends Controller
                 ->join('menu as m', 'm.id_menu', '=', 'k.id_menu')
                 ->where('k.id_user', $id_user)
                 ->where('k.id_menu', $id_menu)
-                ->select('k.jumlah', 'm.harga')
+                ->select('k.jumlah', 'm.harga', 'm.diskon')
                 ->first();
 
             if ($rowItem) {
-                $item_subtotal = (int) $rowItem->jumlah * (int) $rowItem->harga;
+                $harga_jual = (int) $rowItem->harga;
+                $diskon_persen = (int) ($rowItem->diskon ?? 0);
+                $harga_final = $harga_jual - ($harga_jual * $diskon_persen / 100);
+                $item_subtotal = (int) $rowItem->jumlah * $harga_final;
             }
         }
 

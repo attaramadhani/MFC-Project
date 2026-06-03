@@ -123,26 +123,41 @@
     @endif
   </div>
 
-  <div class="order-detail-summary d-flex justify-content-between align-items-start mt-3">
-    <div class="order-detail-summary-left">
-      <div class="small text-muted mb-1">Total</div>
-      <div class="order-detail-total mb-1">
-        Rp {{ number_format($totalHarga, 0, ',', '.') }}
+  <div class="order-detail-summary mt-3">
+    @php
+      $subtotalItems = 0;
+      foreach ($items as $row) { $subtotalItems += ($row->jumlah * $row->harga); }
+      $ongkirVal = (float) ($order->ongkir ?? 0);
+    @endphp
+    <div class="card border-0 bg-light rounded-4 mb-3">
+      <div class="card-body p-3">
+        <div class="d-flex justify-content-between mb-1">
+          <span class="text-muted small">Subtotal Menu</span>
+          <span class="small">Rp {{ number_format($subtotalItems, 0, ',', '.') }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-muted small">Ongkos Kirim</span>
+          <span class="small">Rp {{ number_format($ongkirVal, 0, ',', '.') }}</span>
+        </div>
+        <hr class="my-2 opacity-10">
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="fw-bold small">Total Bayar</span>
+          <span class="fw-bold text-danger">Rp {{ number_format($totalHarga, 0, ',', '.') }}</span>
+        </div>
       </div>
-
-      @if ($pembayaran)
-        <div class="small text-muted">
-          Metode:
-          {{ $paymentMethod === 'cash' ? 'COD' : ($pembayaran->metode ?? $pembayaran->provider) }}
-          <br>
-          Status pembayaran: {{ humanPaymentStatus($pembayaran->status) }}
-        </div>
-      @else
-        <div class="small text-muted">
-          Belum ada data pembayaran tercatat.
-        </div>
-      @endif
     </div>
+
+    <div class="d-flex justify-content-between align-items-end">
+      <div class="order-detail-summary-left">
+        @if ($pembayaran)
+          <div class="small text-muted">
+            Metode: {{ $paymentMethod === 'cash' ? 'COD' : ($pembayaran->metode ?? $pembayaran->provider) }}<br>
+            Status: {{ humanPaymentStatus($pembayaran->status) }}
+          </div>
+        @else
+          <div class="small text-muted">Belum ada data pembayaran.</div>
+        @endif
+      </div>
 
     <div class="order-detail-summary-right text-end">
       @php
@@ -160,6 +175,9 @@
         >
           Lanjutkan Pembayaran
         </button>
+        <a href="{{ route('pelanggan.orders.check', $order->id_pesanan) }}" class="btn btn-outline-secondary btn-sm rounded-pill mt-2 d-block ms-auto" style="width: fit-content;">
+          <small>Cek Status Pembayaran</small>
+        </a>
       @elseif ($isCanceled)
         <div class="small text-danger fw-semibold">
           Pesanan dibatalkan

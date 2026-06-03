@@ -18,12 +18,6 @@
     </a>
 </div>
 
-@if(session('success'))
-    <div class="alert alert-success py-2">
-        {{ session('success') }}
-    </div>
-@endif
-
 <div class="card shadow-sm border-0 rounded-4">
     <div class="card-body">
         <div class="table-responsive">
@@ -33,7 +27,11 @@
                         <th>Gambar</th>
                         <th>Nama</th>
                         <th>Kategori</th>
-                        <th>Harga</th>
+                        <th>Deskripsi</th>
+                        <th>Harga Beli</th>
+                        <th>Harga Jual</th>
+                        <th>Stok</th>
+                        <th>Diskon</th>
                         <th class="text-end">Aksi</th>
                     </tr>
                 </thead>
@@ -42,13 +40,32 @@
                         <tr>
                             <td style="width: 80px;">
                                 @if(!empty($m->gambar))
-                                    <img src="{{ asset('img/' . $m->gambar) }}" width="50" class="rounded" alt="{{ $m->nama }}">
+                                    <img src="{{ asset('img/' . $m->gambar) }}" width="50" height="50" style="object-fit: cover;" class="rounded" alt="{{ $m->nama }}">
                                 @endif
                             </td>
 
-                            <td>{{ $m->nama }}</td>
+                            <td>
+                                {{ $m->nama }}
+                                @if($m->is_paket)
+                                    <span class="badge bg-danger rounded-pill ms-2" style="font-size: 0.7rem;">Paket</span>
+                                @endif
+                            </td>
                             <td>{{ ucfirst($m->kategori) }}</td>
+                            <td>
+                                <div class="text-muted small text-truncate" style="max-width: 150px;">
+                                    {{ $m->deskripsi ?: '-' }}
+                                </div>
+                            </td>
+                            <td>Rp {{ number_format($m->harga_beli, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($m->harga, 0, ',', '.') }}</td>
+                            <td>
+                                @if($m->stok <= 0)
+                                    <span class="badge bg-danger">Habis</span>
+                                @else
+                                    <span class="badge bg-success">{{ $m->stok }}</span>
+                                @endif
+                            </td>
+                            <td>{{ $m->diskon ? $m->diskon . '%' : '-' }}</td>
 
                             <td class="text-end text-nowrap">
                                 <a href="{{ route('admin.menu.edit', $m->id_menu) }}"
@@ -70,7 +87,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
+                            <td colspan="9" class="text-center text-muted py-4">
                                 Belum ada menu.
                             </td>
                         </tr>

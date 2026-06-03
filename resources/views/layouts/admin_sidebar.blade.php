@@ -1,13 +1,15 @@
 @php
-    $adminName = $adminName ?? (auth()->user()->nama_user ?? 'Admin');
+    $adminName    = $adminName    ?? (auth()->user()->nama_user ?? 'Admin');
     $adminInitial = $adminInitial ?? mb_strtoupper(mb_substr($adminName, 0, 1));
 @endphp
 
 <aside class="admin-sidebar">
-    <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
-        <div class="brand-logo">🍗</div>
+    <a href="{{ route('admin.dashboard') }}" class="sidebar-brand text-decoration-none">
+        <div class="brand-logo" style="background: transparent; box-shadow: none; width: auto; height: auto;">
+            <img src="{{ asset('img/logo.jpg') }}" alt="MFC Logo" height="42" class="rounded" style="object-fit: contain;">
+        </div>
         <div>
-            GeprekinAja<br>
+            MFC<br>
             <small>Admin Panel</small>
         </div>
     </a>
@@ -42,9 +44,9 @@
             <span class="icon">👥</span>
             <span>Users</span>
         </a>
-        
+
         <a href="{{ route('admin.profile.index') }}"
-            class="sidebar-link {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
+           class="sidebar-link {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
             <span class="icon">⚙️</span>
             <span>Profile</span>
         </a>

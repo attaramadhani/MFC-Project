@@ -42,7 +42,12 @@ Route::middleware(['auth', 'role:pelanggan'])->prefix('pelanggan')->name('pelang
 
     Route::get('/pesanan', [PelangganOrderController::class, 'index'])->name('orders.index');
     Route::get('/pesanan/{id}', [PelangganOrderController::class, 'show'])->name('orders.show');
+    Route::get('/pesanan/{id}/check', [PelangganOrderController::class, 'checkStatus'])->name('orders.check');
     Route::get('/pesanan/{id}/struk', [PelangganOrderController::class, 'receipt'])->name('orders.receipt');
+
+    Route::get('/profile', [\App\Http\Controllers\Pelanggan\ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [\App\Http\Controllers\Pelanggan\ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/password', [\App\Http\Controllers\Pelanggan\ProfileController::class, 'updatePassword'])->name('profile.password');
 });
 
 

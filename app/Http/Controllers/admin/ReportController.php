@@ -29,15 +29,21 @@ class ReportController extends Controller
                 SUM(oi.total_item) AS total_item,
                 SUM(oi.makanan_qty) AS makanan_qty,
                 SUM(oi.minuman_qty) AS minuman_qty,
-                SUM(oi.tambahan_qty) AS tambahan_qty
+                SUM(oi.tambahan_qty) AS tambahan_qty,
+                SUM(oi.makanan_profit) AS makanan_profit,
+                SUM(oi.minuman_profit) AS minuman_profit,
+                SUM(oi.tambahan_profit) AS tambahan_profit
             FROM pesanan p
             JOIN (
                 SELECT 
                     dp.id_pesanan,
                     SUM(dp.jumlah) AS total_item,
-                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) IN ('geprek','crispy','gangnam') THEN dp.jumlah ELSE 0 END) AS makanan_qty,
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) IN ('geprek','crispy','gangnam','makanan') THEN dp.jumlah ELSE 0 END) AS makanan_qty,
                     SUM(CASE WHEN LOWER(TRIM(m.kategori)) = 'minuman' THEN dp.jumlah ELSE 0 END) AS minuman_qty,
-                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) = 'tambahan' THEN dp.jumlah ELSE 0 END) AS tambahan_qty
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) NOT IN ('geprek','crispy','gangnam','makanan','minuman') THEN dp.jumlah ELSE 0 END) AS tambahan_qty,
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) IN ('geprek','crispy','gangnam','makanan') THEN dp.jumlah * (dp.harga - dp.diskon - dp.harga_beli) ELSE 0 END) AS makanan_profit,
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) = 'minuman' THEN dp.jumlah * (dp.harga - dp.diskon - dp.harga_beli) ELSE 0 END) AS minuman_profit,
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) NOT IN ('geprek','crispy','gangnam','makanan','minuman') THEN dp.jumlah * (dp.harga - dp.diskon - dp.harga_beli) ELSE 0 END) AS tambahan_profit
                 FROM detail_pesanan dp
                 JOIN menu m ON m.id_menu = dp.id_menu
                 GROUP BY dp.id_pesanan
@@ -54,6 +60,9 @@ class ReportController extends Controller
         $totalMakanan = 0;
         $totalMinuman = 0;
         $totalTambahan = 0;
+        $totalMakananProfit = 0;
+        $totalMinumanProfit = 0;
+        $totalTambahanProfit = 0;
 
         foreach ($rows as $r) {
             $totalPendapatan += (int) $r->total_pendapatan;
@@ -62,6 +71,9 @@ class ReportController extends Controller
             $totalMakanan += (int) $r->makanan_qty;
             $totalMinuman += (int) $r->minuman_qty;
             $totalTambahan += (int) $r->tambahan_qty;
+            $totalMakananProfit += (int) $r->makanan_profit;
+            $totalMinumanProfit += (int) $r->minuman_profit;
+            $totalTambahanProfit += (int) $r->tambahan_profit;
         }
 
         return view('admin.laporan.index', compact(
@@ -73,7 +85,10 @@ class ReportController extends Controller
             'totalItem',
             'totalMakanan',
             'totalMinuman',
-            'totalTambahan'
+            'totalTambahan',
+            'totalMakananProfit',
+            'totalMinumanProfit',
+            'totalTambahanProfit'
         ));
     }
 
@@ -94,13 +109,28 @@ class ReportController extends Controller
                 DATE(p.paid_at) AS tgl,
                 COUNT(*) AS total_transaksi,
                 SUM(p.total_harga) AS total_pendapatan,
-                SUM(dp_total.total_item) AS total_item
+                SUM(oi.total_item) AS total_item,
+                SUM(oi.makanan_qty) AS makanan_qty,
+                SUM(oi.minuman_qty) AS minuman_qty,
+                SUM(oi.tambahan_qty) AS tambahan_qty,
+                SUM(oi.makanan_profit) AS makanan_profit,
+                SUM(oi.minuman_profit) AS minuman_profit,
+                SUM(oi.tambahan_profit) AS tambahan_profit
             FROM pesanan p
             JOIN (
-                SELECT id_pesanan, SUM(jumlah) AS total_item
-                FROM detail_pesanan
-                GROUP BY id_pesanan
-            ) dp_total ON dp_total.id_pesanan = p.id_pesanan
+                SELECT 
+                    dp.id_pesanan,
+                    SUM(dp.jumlah) AS total_item,
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) IN ('geprek','crispy','gangnam','makanan') THEN dp.jumlah ELSE 0 END) AS makanan_qty,
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) = 'minuman' THEN dp.jumlah ELSE 0 END) AS minuman_qty,
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) NOT IN ('geprek','crispy','gangnam','makanan','minuman') THEN dp.jumlah ELSE 0 END) AS tambahan_qty,
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) IN ('geprek','crispy','gangnam','makanan') THEN dp.jumlah * (dp.harga - dp.diskon - dp.harga_beli) ELSE 0 END) AS makanan_profit,
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) = 'minuman' THEN dp.jumlah * (dp.harga - dp.diskon - dp.harga_beli) ELSE 0 END) AS minuman_profit,
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) NOT IN ('geprek','crispy','gangnam','makanan','minuman') THEN dp.jumlah * (dp.harga - dp.diskon - dp.harga_beli) ELSE 0 END) AS tambahan_profit
+                FROM detail_pesanan dp
+                JOIN menu m ON m.id_menu = dp.id_menu
+                GROUP BY dp.id_pesanan
+            ) oi ON oi.id_pesanan = p.id_pesanan
             WHERE p.payment_status = 'paid'
               AND DATE(p.paid_at) BETWEEN ? AND ?
             GROUP BY DATE(p.paid_at)
@@ -110,11 +140,23 @@ class ReportController extends Controller
         $totalPendapatan = 0;
         $totalTransaksi = 0;
         $totalItem = 0;
+        $totalMakanan = 0;
+        $totalMinuman = 0;
+        $totalTambahan = 0;
+        $totalMakananProfit = 0;
+        $totalMinumanProfit = 0;
+        $totalTambahanProfit = 0;
 
         foreach ($rows as $r) {
             $totalPendapatan += (int) $r->total_pendapatan;
             $totalTransaksi += (int) $r->total_transaksi;
             $totalItem += (int) $r->total_item;
+            $totalMakanan += (int) $r->makanan_qty;
+            $totalMinuman += (int) $r->minuman_qty;
+            $totalTambahan += (int) $r->tambahan_qty;
+            $totalMakananProfit += (int) $r->makanan_profit;
+            $totalMinumanProfit += (int) $r->minuman_profit;
+            $totalTambahanProfit += (int) $r->tambahan_profit;
         }
 
         $admin = Auth::user()->nama_user ?? 'Administrator';
@@ -126,6 +168,12 @@ class ReportController extends Controller
             'totalPendapatan',
             'totalTransaksi',
             'totalItem',
+            'totalMakanan',
+            'totalMinuman',
+            'totalTambahan',
+            'totalMakananProfit',
+            'totalMinumanProfit',
+            'totalTambahanProfit',
             'admin'
         ))->render();
 

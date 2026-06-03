@@ -14,7 +14,9 @@
 
         @if ($orders->isEmpty())
           <div class="text-center py-5">
-            <div class="mb-3" style="font-size:2.5rem;">🍗</div>
+            <div class="mb-3">
+              <img src="{{ asset('img/logo.jpg') }}" alt="MFC Logo" width="100" class="rounded-4 opacity-75">
+            </div>
             <h5 class="mb-2">Belum ada pesanan</h5>
             <p class="text-muted small mb-3">
               Kamu belum pernah melakukan pesanan. Yuk mulai pilih menu favoritmu dulu.
@@ -47,7 +49,7 @@
                         break;
                     case 'pending':
                         $badgeBayarClass = 'badge-soft-amber';
-                        $badgeBayarText = 'Menunggu konfirmasi';
+                        $badgeBayarText = 'Menunggu pembayaran';
                         break;
                     case 'failed':
                     case 'expired':
@@ -227,16 +229,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
         window.snap.pay(data.token, {
           onSuccess: function () {
-            window.location.href = '{{ route('pelanggan.orders.index') }}';
+            window.location.href = "{{ route('pelanggan.orders.check', ':id') }}".replace(':id', idPesanan);
           },
           onPending: function () {
-            window.location.href = '{{ route('pelanggan.orders.index') }}';
+            window.location.href = "{{ route('pelanggan.orders.check', ':id') }}".replace(':id', idPesanan);
           },
           onError: function () {
             alert('Terjadi kesalahan saat pembayaran.');
           },
           onClose: function () {
-            console.log('Popup pembayaran ditutup.');
+            // Jika ditutup, coba cek status juga siapa tahu sudah bayar tapi popup ditutup manual
+            window.location.href = "{{ route('pelanggan.orders.check', ':id') }}".replace(':id', idPesanan);
           }
         });
       })

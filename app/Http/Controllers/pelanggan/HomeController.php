@@ -17,22 +17,26 @@ class HomeController extends Controller
         $menus = Menu::orderBy('kategori')->orderBy('nama')->get();
 
         $kategoriMap = [
-            'geprek'   => 'Makanan',
-            'crispy'   => 'Makanan',
-            'gangnam'  => 'Makanan',
+            'makanan'  => 'Makanan',
             'minuman'  => 'Minuman',
+            'paket'    => 'Paket',
             'tambahan' => 'Tambahan',
         ];
 
+        $menusPaket = [];
         $menusByKategori = [];
 
         foreach ($menus as $m) {
-            $raw = strtolower(trim($m->kategori ?? 'lainnya'));
-            $key = $kategoriMap[$raw] ?? 'Lainnya';
-            $menusByKategori[$key][] = $m;
+            if ($m->is_paket) {
+                $menusPaket[] = $m;
+            } else {
+                $raw = strtolower(trim($m->kategori ?? 'lainnya'));
+                $key = $kategoriMap[$raw] ?? 'Lainnya';
+                $menusByKategori[$key][] = $m;
+            }
         }
 
-        $urutanKategori = ['Makanan', 'Minuman', 'Tambahan'];
+        $urutanKategori = ['Makanan', 'Minuman', 'Paket', 'Tambahan'];
         $orderedMenus = [];
 
         foreach ($urutanKategori as $kat) {
@@ -51,6 +55,7 @@ class HomeController extends Controller
         }
 
         return view('pelanggan.index', [
+            'menusPaket' => $menusPaket,
             'menusByKategori' => $orderedMenus,
             'cartByMenu' => $cartByMenu,
         ]);

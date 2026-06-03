@@ -17,18 +17,6 @@ $pageTitle = 'Profil Admin';
 
             <h5 class="mb-3">Ganti Password</h5>
 
-            @if(session('success'))
-                <div class="alert alert-success py-2">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="alert alert-danger py-2">
-                    {{ session('error') }}
-                </div>
-            @endif
-
             <form method="POST" action="{{ route('admin.profile.password') }}">
                 @csrf
 
