@@ -80,9 +80,62 @@ Route::post('/midtrans/notification', [MidtransController::class, 'notification'
 
 Route::get('/run-migration-temp', function() {
     try {
+        // 1. Run migrations
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        return "<pre>Migration run successfully:\n" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+        $output = "Migration run successfully:\n" . \Illuminate\Support\Facades\Artisan::output() . "\n";
+
+        // 2. Seed menus if menu table is empty
+        $menuCount = \Illuminate\Support\Facades\DB::table('menu')->count();
+        if ($menuCount === 0) {
+            $jsonPath = base_path('menus_dump.json');
+            if (file_exists($jsonPath)) {
+                $menus = json_decode(file_get_contents($jsonPath), true);
+                foreach ($menus as $menu) {
+                    \Illuminate\Support\Facades\DB::table('menu')->insert([
+                        'id_menu' => $menu['id_menu'],
+                        'nama' => $menu['nama'],
+                        'deskripsi' => $menu['deskripsi'],
+                        'harga' => $menu['harga'],
+                        'is_paket' => $menu['is_paket'] ?? 0,
+                        'kategori' => $menu['kategori'],
+                        'gambar' => $menu['gambar'],
+                        'dibuat_pada' => $menu['dibuat_pada'] ?? now(),
+                        // Add default stock, buy price, and discount for the new revision features
+                        'stok' => 20,
+                        'harga_beli' => round($menu['harga'] * 0.7, 2),
+                        'diskon' => 0,
+                    ]);
+                }
+                $output .= "Seeded " . count($menus) . " menus from menus_dump.json successfully.\n";
+            } else {
+                $output .= "Warning: menus_dump.json not found, skipping menu seeding.\n";
+            }
+        } else {
+            $output .= "Menu table is not empty ($menuCount items), skipping menu seeding.\n";
+        }
+
+        // 3. Seed default admin & pelanggan if users table is empty
+        $userCount = \Illuminate\Support\Facades\DB::table('users')->count();
+        if ($userCount === 0) {
+            \Illuminate\Support\Facades\DB::table('users')->insert([
+                [
+                    'nama_user' => 'admin',
+                    'pass_user' => \Illuminate\Support\Facades\Hash::make('admin123'),
+                    'role' => 'admin',
+                ],
+                [
+                    'nama_user' => 'pembeli',
+                    'pass_user' => \Illuminate\Support\Facades\Hash::make('pembeli123'),
+                    'role' => 'pelanggan',
+                ]
+            ]);
+            $output .= "Seeded default users (admin/admin123, pembeli/pembeli123) successfully.\n";
+        } else {
+            $output .= "Users table is not empty ($userCount users), skipping user seeding.\n";
+        }
+
+        return "<pre>" . htmlspecialchars($output) . "</pre>";
     } catch (\Exception $e) {
-        return "Error: " . $e->getMessage();
+        return "Error: " . $e->getMessage() . "\nTrace:\n" . $e->getTraceAsString();
     }
 });
