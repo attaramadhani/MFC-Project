@@ -1,6 +1,7 @@
 <?php
 
 // Force APP_DEBUG to true for debugging Vercel deployment
+echo "API/INDEX.PHP EXECUTED!\n";
 putenv('APP_DEBUG=true');
 $_ENV['APP_DEBUG'] = 'true';
 $_SERVER['APP_DEBUG'] = 'true';
@@ -25,6 +26,27 @@ $_SERVER['CACHE_DRIVER'] = 'array';
 putenv('SESSION_DRIVER=cookie');
 $_ENV['SESSION_DRIVER'] = 'cookie';
 $_SERVER['SESSION_DRIVER'] = 'cookie';
+
+// Redirect Laravel bootstrap cache files to writable /tmp
+putenv('APP_CONFIG_CACHE=/tmp/config.php');
+$_ENV['APP_CONFIG_CACHE'] = '/tmp/config.php';
+$_SERVER['APP_CONFIG_CACHE'] = '/tmp/config.php';
+
+putenv('APP_SERVICES_CACHE=/tmp/services.php');
+$_ENV['APP_SERVICES_CACHE'] = '/tmp/services.php';
+$_SERVER['APP_SERVICES_CACHE'] = '/tmp/services.php';
+
+putenv('APP_PACKAGES_CACHE=/tmp/packages.php');
+$_ENV['APP_PACKAGES_CACHE'] = '/tmp/packages.php';
+$_SERVER['APP_PACKAGES_CACHE'] = '/tmp/packages.php';
+
+putenv('APP_ROUTES_CACHE=/tmp/routes.php');
+$_ENV['APP_ROUTES_CACHE'] = '/tmp/routes.php';
+$_SERVER['APP_ROUTES_CACHE'] = '/tmp/routes.php';
+
+putenv('APP_EVENTS_CACHE=/tmp/events.php');
+$_ENV['APP_EVENTS_CACHE'] = '/tmp/events.php';
+$_SERVER['APP_EVENTS_CACHE'] = '/tmp/events.php';
 
 if (empty($_ENV['APP_KEY']) && empty(getenv('APP_KEY'))) {
     echo "<h1>Laravel Diagnostic Error</h1>";
