@@ -14,7 +14,7 @@
     </div>
 
     <a class="btn btn-sm btn-outline-secondary"
-       href="{{ route('admin.reports.export', ['from' => $from, 'to' => $to, 'filter_type' => $filterType]) }}"
+       href="{{ route('admin.reports.export', ['filter_type' => $filterType, 'week' => $selectedWeek, 'month' => $selectedMonth, 'year' => $selectedYear]) }}"
        target="_blank">
         Export PDF
     </a>
@@ -22,25 +22,36 @@
 
 <div class="card shadow-sm border-0 rounded-4 mb-3">
     <div class="card-body">
-        <form method="GET" action="{{ route('admin.reports.index') }}" class="row g-2 align-items-end">
-            <div class="col-md-3">
+        <form method="GET" action="{{ route('admin.reports.index') }}" class="row g-2 align-items-end" id="filterForm">
+            <div class="col-md-4">
                 <label class="form-label small mb-1">Tipe Filter</label>
-                <select name="filter_type" class="form-select form-select-sm">
-                    <option value="daily" {{ $filterType === 'daily' ? 'selected' : '' }}>Harian / Kustom</option>
+                <select name="filter_type" class="form-select form-select-sm" id="filterTypeSelect" onchange="toggleFilterInputs()">
                     <option value="weekly" {{ $filterType === 'weekly' ? 'selected' : '' }}>Mingguan</option>
                     <option value="monthly" {{ $filterType === 'monthly' ? 'selected' : '' }}>Bulanan</option>
                     <option value="yearly" {{ $filterType === 'yearly' ? 'selected' : '' }}>Tahunan</option>
                 </select>
             </div>
 
-            <div class="col-md-3">
-                <label class="form-label small mb-1">Dari</label>
-                <input type="date" name="from" class="form-control form-control-sm" value="{{ $from }}">
+            <!-- Input Mingguan -->
+            <div class="col-md-5 filter-input-group" id="group-weekly" style="display: none;">
+                <label class="form-label small mb-1">Pilih Minggu</label>
+                <input type="week" name="week" class="form-control form-control-sm" value="{{ $selectedWeek }}">
             </div>
 
-            <div class="col-md-3">
-                <label class="form-label small mb-1">Sampai</label>
-                <input type="date" name="to" class="form-control form-control-sm" value="{{ $to }}">
+            <!-- Input Bulanan -->
+            <div class="col-md-5 filter-input-group" id="group-monthly" style="display: none;">
+                <label class="form-label small mb-1">Pilih Bulan</label>
+                <input type="month" name="month" class="form-control form-control-sm" value="{{ $selectedMonth }}">
+            </div>
+
+            <!-- Input Tahunan -->
+            <div class="col-md-5 filter-input-group" id="group-yearly" style="display: none;">
+                <label class="form-label small mb-1">Pilih Tahun</label>
+                <select name="year" class="form-select form-select-sm">
+                    @for($y = date('Y') - 5; $y <= date('Y'); $y++)
+                        <option value="{{ $y }}" {{ (int)$selectedYear === $y ? 'selected' : '' }}>{{ $y }}</option>
+                    @endfor
+                </select>
             </div>
 
             <div class="col-md-3">
@@ -49,6 +60,30 @@
         </form>
     </div>
 </div>
+
+<script>
+    function toggleFilterInputs() {
+        const filterType = document.getElementById('filterTypeSelect').value;
+        // Sembunyikan semua input group
+        document.querySelectorAll('.filter-input-group').forEach(group => {
+            group.style.display = 'none';
+            // Disable input agar tidak dikirim di form submit jika tidak aktif
+            group.querySelectorAll('input, select').forEach(input => input.disabled = true);
+        });
+
+        // Tampilkan yang aktif
+        const activeGroup = document.getElementById('group-' + filterType);
+        if (activeGroup) {
+            activeGroup.style.display = 'block';
+            activeGroup.querySelectorAll('input, select').forEach(input => input.disabled = false);
+        }
+    }
+
+    // Jalankan saat load halaman pertama kali
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleFilterInputs();
+    });
+</script>
 
 <div class="row g-2 mb-3">
     <div class="col-md-4">
@@ -103,12 +138,8 @@
                 <thead class="small text-muted">
                     <tr>
                         <th>
-                            @if($filterType === 'weekly')
-                                Minggu Ke (ISO)
-                            @elseif($filterType === 'monthly')
+                            @if($filterType === 'yearly')
                                 Bulan
-                            @elseif($filterType === 'yearly')
-                                Tahun
                             @else
                                 Tanggal
                             @endif
@@ -126,11 +157,9 @@
                     @forelse($rows as $r)
                         @php
                             $day_profit = (int)$r->makanan_profit + (int)$r->minuman_profit + (int)$r->tambahan_profit;
-                            // Format Tanggal / Periode
-                            $periodeDisplay = $r->tgl;
-                            if ($filterType === 'daily') {
+                            if ($filterType === 'weekly' || $filterType === 'monthly') {
                                 $periodeDisplay = \Carbon\Carbon::parse($r->tgl)->format('d M Y');
-                            } elseif ($filterType === 'monthly') {
+                            } elseif ($filterType === 'yearly') {
                                 $periodeDisplay = \Carbon\Carbon::parse($r->tgl . '-01')->translatedFormat('F Y');
                             }
                         @endphp

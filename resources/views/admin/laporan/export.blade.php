@@ -125,7 +125,15 @@
                     <tr>
                         <td>Periode</td>
                         <td>:</td>
-                        <td>{{ $from }} s/d {{ $to }}</td>
+                        <td>
+                            @if(($filterType ?? 'weekly') === 'weekly')
+                                Minggu {{ $selectedWeek ?? '-' }}
+                            @elseif(($filterType ?? 'weekly') === 'monthly')
+                                Bulan {{ $selectedMonth ?? '-' }}
+                            @elseif(($filterType ?? 'weekly') === 'yearly')
+                                Tahun {{ $selectedYear ?? '-' }}
+                            @endif
+                        </td>
                     </tr>
                     <tr>
                         <td>Dicetak</td>
@@ -145,12 +153,8 @@
             <tr>
                 <th style="width: 5%;">No</th>
                 <th style="width: 25%;">
-                    @if(($filterType ?? 'daily') === 'weekly')
-                        Minggu Ke (ISO)
-                    @elseif(($filterType ?? 'daily') === 'monthly')
+                    @if(($filterType ?? 'weekly') === 'yearly')
                         Bulan
-                    @elseif(($filterType ?? 'daily') === 'yearly')
-                        Tahun
                     @else
                         Tanggal
                     @endif
@@ -168,9 +172,9 @@
                 @php
                     $day_profit = (int)$r->makanan_profit + (int)$r->minuman_profit + (int)$r->tambahan_profit;
                     $periodeDisplay = $r->tgl;
-                    if (($filterType ?? 'daily') === 'daily') {
+                    if (($filterType ?? 'weekly') === 'weekly' || ($filterType ?? 'weekly') === 'monthly') {
                         $periodeDisplay = \Carbon\Carbon::parse($r->tgl)->format('d M Y');
-                    } elseif (($filterType ?? 'daily') === 'monthly') {
+                    } elseif (($filterType ?? 'weekly') === 'yearly') {
                         $periodeDisplay = \Carbon\Carbon::parse($r->tgl . '-01')->translatedFormat('F Y');
                     }
                 @endphp

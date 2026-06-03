@@ -11,38 +11,45 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $defaultFrom = now()->subDays(29)->toDateString();
-        $defaultTo = now()->toDateString();
+        $filterType = request('filter_type', 'weekly'); // default to weekly as requested
+        $selectedWeek = request('week', now()->format('Y-\Ww')); // e.g. "2026-W23" or similar format for input type="week"
+        $selectedMonth = request('month', now()->format('Y-m')); // e.g. "2026-06"
+        $selectedYear = request('year', now()->format('Y')); // e.g. "2026"
 
-        $from = request('from', $defaultFrom);
-        $to = request('to', $defaultTo);
-        $filterType = request('filter_type', 'daily'); // daily, weekly, monthly, yearly
-
-        if ($from > $to) {
-            [$from, $to] = [$to, $from];
-        }
-
-        // Tentukan format grouping tanggal untuk PostgreSQL
-        // daily: YYYY-MM-DD
-        // weekly: YYYY-"W"IW (Year and ISO Week)
-        // monthly: YYYY-MM
-        // yearly: YYYY
         $dateSelect = "CAST(p.paid_at AS DATE) AS tgl";
         $groupBy = "CAST(p.paid_at AS DATE)";
         $orderBy = "tgl ASC";
+        $whereClause = "";
+        $bindings = [];
 
         if ($filterType === 'weekly') {
-            $dateSelect = "TO_CHAR(p.paid_at, 'YYYY-\"W\"IW') AS tgl";
-            $groupBy = "TO_CHAR(p.paid_at, 'YYYY-\"W\"IW')";
+            // Kita filter berdasarkan format tahun-minggu: 'YYYY-"W"IW'
+            // Format input type="week" biasanya "YYYY-Www" (contoh: "2026-W23" atau "2026-W09").
+            // Untuk PostgreSQL kita bisa format pembandingnya dengan TO_CHAR(p.paid_at, 'IYYY-"W"IW')
+            // Catatan: IYYY mendefinisikan tahun ISO.
+            $dateSelect = "CAST(p.paid_at AS DATE) AS tgl";
+            $groupBy = "CAST(p.paid_at AS DATE)";
             $orderBy = "tgl ASC";
+            
+            // Konversi format week "2026-W23" ke "2026-W23"
+            $formattedWeek = str_replace('-W', '-W', $selectedWeek);
+            // Tambahkan padding jika digit minggu hanya satu angka (e.g. W9 -> W09)
+            // Tapi input browser type="week" selalu menghasilkan 2 digit (e.g. 2026-W23 atau 2026-W03).
+            $whereClause = "TO_CHAR(p.paid_at, 'IYYY-\"W\"IW') = ?";
+            $bindings[] = $formattedWeek;
         } elseif ($filterType === 'monthly') {
+            $dateSelect = "CAST(p.paid_at AS DATE) AS tgl";
+            $groupBy = "CAST(p.paid_at AS DATE)";
+            $orderBy = "tgl ASC";
+            $whereClause = "TO_CHAR(p.paid_at, 'YYYY-MM') = ?";
+            $bindings[] = $selectedMonth;
+        } elseif ($filterType === 'yearly') {
+            // Untuk tahunan, kita group by bulan 'YYYY-MM'
             $dateSelect = "TO_CHAR(p.paid_at, 'YYYY-MM') AS tgl";
             $groupBy = "TO_CHAR(p.paid_at, 'YYYY-MM')";
             $orderBy = "tgl ASC";
-        } elseif ($filterType === 'yearly') {
-            $dateSelect = "TO_CHAR(p.paid_at, 'YYYY') AS tgl";
-            $groupBy = "TO_CHAR(p.paid_at, 'YYYY')";
-            $orderBy = "tgl ASC";
+            $whereClause = "TO_CHAR(p.paid_at, 'YYYY') = ?";
+            $bindings[] = $selectedYear;
         }
 
         $rows = DB::select("
@@ -73,10 +80,10 @@ class ReportController extends Controller
                 GROUP BY dp.id_pesanan
             ) oi ON oi.id_pesanan = p.id_pesanan
             WHERE p.payment_status = 'paid'
-              AND CAST(p.paid_at AS DATE) BETWEEN ? AND ?
+              AND {$whereClause}
             GROUP BY {$groupBy}
             ORDER BY {$orderBy}
-        ", [$from, $to]);
+        ", $bindings);
 
         $totalPendapatan = 0;
         $totalTransaksi = 0;
@@ -102,9 +109,10 @@ class ReportController extends Controller
 
         return view('admin.laporan.index', compact(
             'rows',
-            'from',
-            'to',
             'filterType',
+            'selectedWeek',
+            'selectedMonth',
+            'selectedYear',
             'totalPendapatan',
             'totalTransaksi',
             'totalItem',
@@ -119,33 +127,36 @@ class ReportController extends Controller
 
     public function export()
     {
-        $defaultFrom = now()->subDays(29)->toDateString();
-        $defaultTo = now()->toDateString();
-
-        $from = request('from', $defaultFrom);
-        $to = request('to', $defaultTo);
-        $filterType = request('filter_type', 'daily');
-
-        if ($from > $to) {
-            [$from, $to] = [$to, $from];
-        }
+        $filterType = request('filter_type', 'weekly');
+        $selectedWeek = request('week', now()->format('Y-\Ww'));
+        $selectedMonth = request('month', now()->format('Y-m'));
+        $selectedYear = request('year', now()->format('Y'));
 
         $dateSelect = "CAST(p.paid_at AS DATE) AS tgl";
         $groupBy = "CAST(p.paid_at AS DATE)";
         $orderBy = "tgl ASC";
+        $whereClause = "";
+        $bindings = [];
 
         if ($filterType === 'weekly') {
-            $dateSelect = "TO_CHAR(p.paid_at, 'YYYY-\"W\"IW') AS tgl";
-            $groupBy = "TO_CHAR(p.paid_at, 'YYYY-\"W\"IW')";
+            $dateSelect = "CAST(p.paid_at AS DATE) AS tgl";
+            $groupBy = "CAST(p.paid_at AS DATE)";
             $orderBy = "tgl ASC";
+            $formattedWeek = str_replace('-W', '-W', $selectedWeek);
+            $whereClause = "TO_CHAR(p.paid_at, 'IYYY-\"W\"IW') = ?";
+            $bindings[] = $formattedWeek;
         } elseif ($filterType === 'monthly') {
+            $dateSelect = "CAST(p.paid_at AS DATE) AS tgl";
+            $groupBy = "CAST(p.paid_at AS DATE)";
+            $orderBy = "tgl ASC";
+            $whereClause = "TO_CHAR(p.paid_at, 'YYYY-MM') = ?";
+            $bindings[] = $selectedMonth;
+        } elseif ($filterType === 'yearly') {
             $dateSelect = "TO_CHAR(p.paid_at, 'YYYY-MM') AS tgl";
             $groupBy = "TO_CHAR(p.paid_at, 'YYYY-MM')";
             $orderBy = "tgl ASC";
-        } elseif ($filterType === 'yearly') {
-            $dateSelect = "TO_CHAR(p.paid_at, 'YYYY') AS tgl";
-            $groupBy = "TO_CHAR(p.paid_at, 'YYYY')";
-            $orderBy = "tgl ASC";
+            $whereClause = "TO_CHAR(p.paid_at, 'YYYY') = ?";
+            $bindings[] = $selectedYear;
         }
 
         $rows = DB::select("
@@ -176,10 +187,10 @@ class ReportController extends Controller
                 GROUP BY dp.id_pesanan
             ) oi ON oi.id_pesanan = p.id_pesanan
             WHERE p.payment_status = 'paid'
-              AND CAST(p.paid_at AS DATE) BETWEEN ? AND ?
+              AND {$whereClause}
             GROUP BY {$groupBy}
             ORDER BY {$orderBy}
-        ", [$from, $to]);
+        ", $bindings);
 
         $totalPendapatan = 0;
         $totalTransaksi = 0;
