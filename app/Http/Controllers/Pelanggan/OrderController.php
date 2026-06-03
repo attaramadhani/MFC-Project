@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\pelanggan;
+namespace App\Http\Controllers\Pelanggan;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
