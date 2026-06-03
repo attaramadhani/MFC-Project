@@ -51,11 +51,11 @@ class DashboardController extends Controller
         }
 
         $rowsDaily = DB::table('pesanan')
-            ->selectRaw('DATE(paid_at) as tgl, COALESCE(SUM(total_harga),0) as total')
+            ->selectRaw('CAST(paid_at AS DATE) as tgl, COALESCE(SUM(total_harga),0) as total')
             ->where('payment_status', 'paid')
             ->whereDate('paid_at', '>=', now()->subDays(29)->toDateString())
             ->whereDate('paid_at', '<=', now()->toDateString())
-            ->groupBy(DB::raw('DATE(paid_at)'))
+            ->groupBy(DB::raw('CAST(paid_at AS DATE)'))
             ->orderBy('tgl')
             ->get();
 
@@ -75,11 +75,14 @@ class DashboardController extends Controller
             $dailyValues[] = $mapDaily[$key] ?? 0;
         }
 
+        $isPgsql = (DB::connection()->getDriverName() === 'pgsql');
+        $formatExpr = $isPgsql ? "TO_CHAR(paid_at, 'YYYY-MM')" : "DATE_FORMAT(paid_at, '%Y-%m')";
+
         $rowsMonthly = DB::table('pesanan')
-            ->selectRaw("DATE_FORMAT(paid_at, '%Y-%m') as ym, COALESCE(SUM(total_harga),0) as total")
+            ->selectRaw("$formatExpr as ym, COALESCE(SUM(total_harga),0) as total")
             ->where('payment_status', 'paid')
             ->where('paid_at', '>=', now()->startOfMonth()->subMonths(5))
-            ->groupBy(DB::raw("DATE_FORMAT(paid_at, '%Y-%m')"))
+            ->groupBy(DB::raw($formatExpr))
             ->orderBy('ym')
             ->get();
 
