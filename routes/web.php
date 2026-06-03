@@ -78,16 +78,3 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 Route::post('/midtrans/notification', [MidtransController::class, 'notification'])->name('midtrans.notification');
 
-Route::get('/run-migration-temp', function() {
-    try {
-        // Add dibuat_pada column to users table if it doesn't exist
-        $columns = \Illuminate\Support\Facades\DB::select("SELECT column_name FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'dibuat_pada'");
-        if (empty($columns)) {
-            \Illuminate\Support\Facades\DB::statement("ALTER TABLE users ADD COLUMN dibuat_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
-            return response()->json(['status' => 'success', 'message' => 'Column dibuat_pada added to users table']);
-        }
-        return response()->json(['status' => 'skipped', 'message' => 'Column dibuat_pada already exists']);
-    } catch (\Exception $e) {
-        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
-    }
-});
