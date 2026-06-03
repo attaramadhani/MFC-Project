@@ -23,7 +23,7 @@ class ReportController extends Controller
 
         $rows = DB::select("
             SELECT 
-                DATE(p.paid_at) AS tgl,
+                CAST(p.paid_at AS DATE) AS tgl,
                 COUNT(*) AS total_transaksi,
                 SUM(p.total_harga) AS total_pendapatan,
                 SUM(oi.total_item) AS total_item,
@@ -49,8 +49,8 @@ class ReportController extends Controller
                 GROUP BY dp.id_pesanan
             ) oi ON oi.id_pesanan = p.id_pesanan
             WHERE p.payment_status = 'paid'
-              AND DATE(p.paid_at) BETWEEN ? AND ?
-            GROUP BY DATE(p.paid_at)
+              AND CAST(p.paid_at AS DATE) BETWEEN ? AND ?
+            GROUP BY CAST(p.paid_at AS DATE)
             ORDER BY tgl ASC
         ", [$from, $to]);
 
@@ -106,7 +106,7 @@ class ReportController extends Controller
 
         $rows = DB::select("
             SELECT 
-                DATE(p.paid_at) AS tgl,
+                CAST(p.paid_at AS DATE) AS tgl,
                 COUNT(*) AS total_transaksi,
                 SUM(p.total_harga) AS total_pendapatan,
                 SUM(oi.total_item) AS total_item,
@@ -132,8 +132,8 @@ class ReportController extends Controller
                 GROUP BY dp.id_pesanan
             ) oi ON oi.id_pesanan = p.id_pesanan
             WHERE p.payment_status = 'paid'
-              AND DATE(p.paid_at) BETWEEN ? AND ?
-            GROUP BY DATE(p.paid_at)
+              AND CAST(p.paid_at AS DATE) BETWEEN ? AND ?
+            GROUP BY CAST(p.paid_at AS DATE)
             ORDER BY tgl ASC
         ", [$from, $to]);
 
