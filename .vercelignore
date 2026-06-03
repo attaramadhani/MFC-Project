@@ -1,0 +1,17 @@
+# Ignore development and build artifacts for Vercel Serverless size limit
+.git
+.github
+.history
+node_modules
+vendor
+tests
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+storage/logs
+.env
+akun_pembeli.txt
+Pembagian_Tugas_Kelompok_2.md
+phpunit.xml
+vite.config.js
+package-lock.json
