@@ -30,7 +30,7 @@ class DummyTransactionSeeder extends Seeder
             } else {
                 $buyerIds[] = DB::table('users')->insertGetId(array_merge($buyer, [
                     'dibuat_pada' => now(),
-                ]));
+                ]), 'id_user');
             }
         }
 
@@ -197,7 +197,7 @@ class DummyTransactionSeeder extends Seeder
                 'ready_at'           => $readyAt,
                 'completed_at'       => $completedAt,
                 'canceled_at'        => $canceledAt,
-            ]);
+            ], 'id_pesanan');
 
             // Insert detail_pesanan
             foreach ($tx['items'] as [$menuId, $qty]) {
