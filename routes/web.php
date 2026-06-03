@@ -96,7 +96,7 @@ Route::get('/run-migration-temp', function() {
                         'nama' => $menu['nama'],
                         'deskripsi' => $menu['deskripsi'],
                         'harga' => $menu['harga'],
-                        'is_paket' => (bool)($menu['is_paket'] ?? 0),
+                        'is_paket' => ($menu['is_paket'] ?? 0) ? \Illuminate\Support\Facades\DB::raw('true') : \Illuminate\Support\Facades\DB::raw('false'),
                         'kategori' => $menu['kategori'],
                         'gambar' => $menu['gambar'],
                         'dibuat_pada' => $menu['dibuat_pada'] ?? now(),
