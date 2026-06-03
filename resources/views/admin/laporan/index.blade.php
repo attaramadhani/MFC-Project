@@ -108,6 +108,137 @@
     </div>
 </div>
 
+<div class="row g-3 mb-3">
+    <!-- Chart menu paling laris -->
+    <div class="col-md-7">
+        <div class="card shadow-sm border-0 rounded-4 h-100">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3 small text-muted text-uppercase">Menu Paling Laris (Top 5)</h6>
+                <div style="position: relative; height: 220px; width: 100%;">
+                    <canvas id="topMenusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- List / Leaderboard menu paling laris -->
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 rounded-4 h-100">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3 small text-muted text-uppercase">Detail Penjualan Terbanyak</h6>
+                <div class="d-flex flex-column gap-2">
+                    @forelse($topMenus as $i => $tm)
+                        @php
+                            $colors = ['#ff7675', '#74b9ff', '#55efc4', '#ffeaa7', '#a29bfe'];
+                            $color = $colors[$i % count($colors)];
+                        @endphp
+                        <div class="d-flex align-items-center justify-content-between p-2 rounded-3" style="background: rgba(0,0,0,0.02);">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; background-color: {{ $color }}; color: #333; font-weight: bold;">
+                                    {{ $i + 1 }}
+                                </span>
+                                <span class="fw-medium text-dark small">{{ $tm->nama_menu }}</span>
+                            </div>
+                            <span class="badge bg-secondary rounded-pill small">{{ $tm->total_qty }} terjual</span>
+                        </div>
+                    @empty
+                        <div class="text-center text-muted py-4 small">Belum ada data penjualan.</div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('topMenusChart').getContext('2d');
+        const labels = {!! json_encode(collect($topMenus)->pluck('nama_menu')) !!};
+        const dataValues = {!! json_encode(collect($topMenus)->pluck('total_qty')) !!};
+
+        if (labels.length === 0) {
+            ctx.font = "14px Inter";
+            ctx.fillStyle = "#888";
+            ctx.textAlign = "center";
+            ctx.fillText("Tidak ada data untuk diagram", 150, 110);
+            return;
+        }
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Jumlah Terjual',
+                    data: dataValues,
+                    backgroundColor: [
+                        'rgba(255, 118, 117, 0.85)',
+                        'rgba(116, 185, 255, 0.85)',
+                        'rgba(85, 239, 196, 0.85)',
+                        'rgba(255, 234, 167, 0.85)',
+                        'rgba(162, 155, 254, 0.85)'
+                    ],
+                    borderColor: [
+                        '#ff7675',
+                        '#74b9ff',
+                        '#55efc4',
+                        '#ffeaa7',
+                        '#a29bfe'
+                    ],
+                    borderWidth: 1.5,
+                    borderRadius: 8,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.parsed.y} porsi/item`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                family: 'Inter',
+                                size: 10
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            precision: 0,
+                            font: {
+                                family: 'Inter',
+                                size: 10
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+@endpush
+
 <div class="row g-2 mb-3">
     <div class="col-md-4">
         <div class="stat-card" style="border-left: 4px solid #2ecc71;">
