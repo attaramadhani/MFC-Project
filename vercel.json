@@ -6,7 +6,18 @@
     "VIEW_COMPILED_PATH": "/tmp",
     "CACHE_STORE": "array",
     "CACHE_DRIVER": "array",
-    "SESSION_DRIVER": "cookie"
+    "SESSION_DRIVER": "cookie",
+    "APP_CONFIG_CACHE": "/tmp/config.php",
+    "APP_SERVICES_CACHE": "/tmp/services.php",
+    "APP_PACKAGES_CACHE": "/tmp/packages.php",
+    "APP_ROUTES_CACHE": "/tmp/routes.php",
+    "APP_EVENTS_CACHE": "/tmp/events.php",
+    "DB_CONNECTION": "pgsql",
+    "DB_HOST": "",
+    "DB_PORT": "",
+    "DB_DATABASE": "",
+    "DB_USERNAME": "",
+    "DB_PASSWORD": ""
   },
   "functions": {
     "api/index.php": {
