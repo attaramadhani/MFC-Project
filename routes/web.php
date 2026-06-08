@@ -77,3 +77,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 });
 
 Route::post('/midtrans/notification', [MidtransController::class, 'notification'])->name('midtrans.notification');
+
+// Temporary route to migrate and seed production database
+Route::get('/run-migrations', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'AdminSeeder', '--force' => true]);
+        return "Migrations and Seeding completed successfully. Admin password has been reset to 'password'.";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
