@@ -44,18 +44,18 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Harga Jual Paket (Otomatis)</label>
-                    <input type="number" name="harga" id="harga_jual_paket" class="form-control bg-light" value="{{ old('harga', $menu->harga) }}" readonly>
+                    <input type="number" name="harga" id="harga_jual_paket" class="form-control bg-light" value="{{ old('harga', (int) $menu->harga) }}" readonly>
                     <div class="form-text text-muted">Harga jual dihitung otomatis dari komponen.</div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Diskon (%)</label>
-                    <input type="number" name="diskon" class="form-control" min="0" max="100" value="{{ old('diskon', $menu->diskon) }}">
+                    <input type="number" name="diskon" class="form-control" min="0" max="100" value="{{ old('diskon', (int) $menu->diskon) }}">
                 </div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Stok Paket</label>
-                <input type="number" name="stok" class="form-control" value="{{ old('stok', $menu->stok) }}" required>
+                <input type="number" name="stok" class="form-control" value="{{ old('stok', (int) $menu->stok) }}" required>
             </div>
 
             <div class="mb-3">
