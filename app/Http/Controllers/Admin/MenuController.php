@@ -16,7 +16,7 @@ class MenuController extends Controller
 
     public function create()
     {
-        $nonPaketMenus = DB::table('menu')->where('is_paket', false)->get();
+        $nonPaketMenus = DB::table('menu')->where('is_paket', DB::raw('FALSE'))->get();
         return view('admin.menu.create', compact('nonPaketMenus'));
     }
 
@@ -45,7 +45,7 @@ class MenuController extends Controller
             $gambar = $newName;
         }
 
-        $isPaket = (bool) $request->is_paket;
+        $isPaket = $request->is_paket ? DB::raw('TRUE') : DB::raw('FALSE');
 
         $id_menu = DB::table('menu')->insertGetId([
             'nama' => $request->nama,
@@ -59,8 +59,7 @@ class MenuController extends Controller
             'gambar' => $gambar,
         ], 'id_menu');
 
-        // Handle komposisi paket
-        if ($isPaket && !empty($request->komposisi_id_menu)) {
+        if ($request->is_paket && !empty($request->komposisi_id_menu)) {
             foreach ($request->komposisi_id_menu as $index => $id_komponen) {
                 if ($id_komponen) {
                     DB::table('paket_komposisi')->insert([
@@ -80,7 +79,7 @@ class MenuController extends Controller
         $menu = DB::table('menu')->where('id_menu', $id)->first();
         abort_if(!$menu, 404);
 
-        $nonPaketMenus = DB::table('menu')->where('is_paket', false)->get();
+        $nonPaketMenus = DB::table('menu')->where('is_paket', DB::raw('FALSE'))->get();
         $komposisi = [];
         if ($menu->is_paket) {
             $komposisi = DB::table('paket_komposisi')->where('id_menu_paket', $id)->get();
@@ -122,7 +121,7 @@ class MenuController extends Controller
             $gambar = $newName;
         }
 
-        $isPaket = (bool) $request->is_paket;
+        $isPaket = $request->is_paket ? DB::raw('TRUE') : DB::raw('FALSE');
 
         DB::table('menu')
             ->where('id_menu', $id)
@@ -140,7 +139,7 @@ class MenuController extends Controller
 
         // Sync komposisi paket
         DB::table('paket_komposisi')->where('id_menu_paket', $id)->delete();
-        if ($isPaket && !empty($request->komposisi_id_menu)) {
+        if ($request->is_paket && !empty($request->komposisi_id_menu)) {
             foreach ($request->komposisi_id_menu as $index => $id_komponen) {
                 if ($id_komponen) {
                     DB::table('paket_komposisi')->insert([
