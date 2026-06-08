@@ -46,20 +46,28 @@ class MenuController extends Controller
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $newName = 'menu_' . time() . '_' . rand(1000, 9999) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('img'), $newName);
-            $gambar = $newName;
+            try {
+                $file->move(public_path('img'), $newName);
+                $gambar = $newName;
+            } catch (\Exception $e) {
+                // Ignore error on Vercel
+                $gambar = null;
+            }
         }
 
         $isPaket = $request->is_paket ? DB::raw('TRUE') : DB::raw('FALSE');
         $harga_beli = (int) ($request->harga_beli ?? 0);
+        $harga_jual = (int) $request->harga;
 
         if ($request->is_paket && !empty($request->komposisi_id_menu)) {
             $harga_beli = 0;
+            $harga_jual = 0;
             $komponenMenus = DB::table('menu')->whereIn('id_menu', $request->komposisi_id_menu)->get()->keyBy('id_menu');
             foreach ($request->komposisi_id_menu as $id_komponen) {
                 $qty = $request->komposisi_jumlah[$id_komponen] ?? 1;
                 if (isset($komponenMenus[$id_komponen])) {
                     $harga_beli += $komponenMenus[$id_komponen]->harga_beli * $qty;
+                    $harga_jual += $komponenMenus[$id_komponen]->harga * $qty;
                 }
             }
         }
@@ -68,7 +76,7 @@ class MenuController extends Controller
             'nama' => $request->nama,
             'is_paket' => $isPaket,
             'kategori' => $request->kategori,
-            'harga' => (int) $request->harga,
+            'harga' => $harga_jual,
             'harga_beli' => $harga_beli,
             'stok' => (int) $request->stok,
             'diskon' => (int) ($request->diskon ?? 0),
@@ -134,25 +142,30 @@ class MenuController extends Controller
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $newName = 'menu_' . time() . '_' . rand(1000, 9999) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('img'), $newName);
-
-            if ($gambar && is_file(public_path('img/' . $gambar))) {
-                @unlink(public_path('img/' . $gambar));
+            try {
+                $file->move(public_path('img'), $newName);
+                if ($gambar && is_file(public_path('img/' . $gambar))) {
+                    @unlink(public_path('img/' . $gambar));
+                }
+                $gambar = $newName;
+            } catch (\Exception $e) {
+                // Ignore error on Vercel
             }
-
-            $gambar = $newName;
         }
 
         $isPaket = $request->is_paket ? DB::raw('TRUE') : DB::raw('FALSE');
         $harga_beli = (int) ($request->harga_beli ?? 0);
+        $harga_jual = (int) $request->harga;
 
         if ($request->is_paket && !empty($request->komposisi_id_menu)) {
             $harga_beli = 0;
+            $harga_jual = 0;
             $komponenMenus = DB::table('menu')->whereIn('id_menu', $request->komposisi_id_menu)->get()->keyBy('id_menu');
             foreach ($request->komposisi_id_menu as $id_komponen) {
                 $qty = $request->komposisi_jumlah[$id_komponen] ?? 1;
                 if (isset($komponenMenus[$id_komponen])) {
                     $harga_beli += $komponenMenus[$id_komponen]->harga_beli * $qty;
+                    $harga_jual += $komponenMenus[$id_komponen]->harga * $qty;
                 }
             }
         }
@@ -163,7 +176,7 @@ class MenuController extends Controller
                 'nama' => $request->nama,
                 'is_paket' => $isPaket,
                 'kategori' => $request->kategori,
-                'harga' => (int) $request->harga,
+                'harga' => $harga_jual,
                 'harga_beli' => $harga_beli,
                 'stok' => (int) $request->stok,
                 'diskon' => (int) ($request->diskon ?? 0),
