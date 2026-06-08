@@ -25,10 +25,20 @@
 
 <div class="card shadow-sm border-0 rounded-4">
     <div class="card-body">
-        <div class="table-responsive">
+        <form action="{{ route('admin.menu.bulk_destroy') }}" method="POST" id="bulkDeleteForm" onsubmit="return confirm('Apakah Anda yakin ingin menghapus semua menu yang dipilih?')">
+            @csrf
+            <div class="mb-3">
+                <button type="submit" class="btn btn-danger btn-sm" id="btnBulkDelete" disabled>
+                    Hapus yang Dipilih (<span id="selectedCount">0</span>)
+                </button>
+            </div>
+            <div class="table-responsive">
             <table class="table table-hover align-middle">
                 <thead>
                     <tr>
+                        <th style="width: 40px;">
+                            <input class="form-check-input" type="checkbox" id="checkAll">
+                        </th>
                         <th>Gambar</th>
                         <th>Nama</th>
                         <th>Kategori</th>
@@ -43,6 +53,9 @@
                 <tbody>
                     @forelse($menus as $m)
                         <tr>
+                            <td>
+                                <input class="form-check-input menu-checkbox" type="checkbox" name="menu_ids[]" value="{{ $m->id_menu }}">
+                            </td>
                             <td style="width: 80px;">
                                 @if(!empty($m->gambar))
                                     <img src="{{ get_menu_image_url($m->gambar) }}" width="50" height="50" style="object-fit: cover;" class="rounded" alt="{{ $m->nama }}">
@@ -93,7 +106,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="text-center text-muted py-4">
+                            <td colspan="10" class="text-center text-muted py-4">
                                 Belum ada menu.
                             </td>
                         </tr>
@@ -101,6 +114,40 @@
                 </tbody>
             </table>
         </div>
+        </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkAll = document.getElementById('checkAll');
+        const checkboxes = document.querySelectorAll('.menu-checkbox');
+        const btnBulkDelete = document.getElementById('btnBulkDelete');
+        const selectedCount = document.getElementById('selectedCount');
+
+        function updateState() {
+            const checkedBoxes = document.querySelectorAll('.menu-checkbox:checked');
+            selectedCount.textContent = checkedBoxes.length;
+            if (checkedBoxes.length > 0) {
+                btnBulkDelete.removeAttribute('disabled');
+            } else {
+                btnBulkDelete.setAttribute('disabled', 'disabled');
+            }
+            if (checkAll) {
+                checkAll.checked = (checkboxes.length > 0 && checkedBoxes.length === checkboxes.length);
+            }
+        }
+
+        if (checkAll) {
+            checkAll.addEventListener('change', function() {
+                checkboxes.forEach(cb => cb.checked = this.checked);
+                updateState();
+            });
+        }
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', updateState);
+        });
+    });
+</script>
 @endsection

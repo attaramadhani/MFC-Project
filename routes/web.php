@@ -62,6 +62,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/menu/{id}/paket/edit', [MenuController::class, 'editPaket'])->name('menu.paket.edit');
     Route::put('/menu/{id}', [MenuController::class, 'update'])->name('menu.update');
     Route::delete('/menu/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
+    Route::post('/menu/bulk-delete', [MenuController::class, 'bulkDestroy'])->name('menu.bulk_destroy');
 
     Route::get('/pesanan', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('/pesanan/{id}', [AdminOrderController::class, 'show'])->name('orders.show');

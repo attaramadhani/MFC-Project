@@ -299,4 +299,52 @@ class MenuController extends Controller
 
         return redirect()->route('admin.menu.index')->with('success', 'Menu dihapus.');
     }
+
+    public function bulkDestroy(Request $request)
+    {
+        $ids = $request->input('menu_ids');
+        if (!$ids || !is_array($ids)) {
+            return redirect()->route('admin.menu.index')->with('error', 'Pilih minimal satu menu untuk dihapus.');
+        }
+
+        $menus = DB::table('menu')->whereIn('id_menu', $ids)->get();
+
+        foreach ($menus as $menu) {
+            // Hapus data keranjang yang berisi menu ini
+            DB::table('keranjang')->where('id_menu', $menu->id_menu)->delete();
+
+            // Hapus riwayat pesanan (detail) yang terkait dengan menu ini
+            DB::table('detail_pesanan')->where('id_menu', $menu->id_menu)->delete();
+
+            // Hapus komposisi paket jika ini paket
+            DB::table('paket_komposisi')->where('id_menu_paket', $menu->id_menu)->delete();
+            // Hapus komposisi jika ini komponen yang dipakai di paket
+            DB::table('paket_komposisi')->where('id_menu_komponen', $menu->id_menu)->delete();
+
+            DB::table('menu')->where('id_menu', $menu->id_menu)->delete();
+
+            if ($menu->gambar) {
+                $supabaseUrl = env('SUPABASE_URL');
+                $supabaseKey = env('SUPABASE_KEY');
+                $bucket = env('SUPABASE_BUCKET', 'mfc-images');
+
+                if ($supabaseUrl && $supabaseKey) {
+                    try {
+                        $deleteUrl = rtrim($supabaseUrl, '/') . '/storage/v1/object/' . $bucket . '/' . $menu->gambar;
+                        \Illuminate\Support\Facades\Http::withHeaders([
+                            'Authorization' => 'Bearer ' . $supabaseKey,
+                        ])->delete($deleteUrl);
+                    } catch (\Exception $e) {
+                        // Ignore
+                    }
+                }
+
+                if (is_file(public_path('img/' . $menu->gambar))) {
+                    @unlink(public_path('img/' . $menu->gambar));
+                }
+            }
+        }
+
+        return redirect()->route('admin.menu.index')->with('success', count($menus) . ' menu berhasil dihapus.');
+    }
 }
