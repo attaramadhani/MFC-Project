@@ -4,7 +4,7 @@ if (!function_exists('get_menu_image_url')) {
     function get_menu_image_url($filename)
     {
         if (empty($filename)) {
-            return asset('img/no-image.png'); // placeholder if any
+            return 'https://placehold.co/400x400/eeeeee/999999?text=No+Image'; // placeholder if any
         }
 
         $supabaseUrl = env('SUPABASE_URL');
