@@ -329,4 +329,52 @@
         </div>
     </div>
 </div>
+
+<h3 class="h6 fw-bold mt-5 mb-3">Detail Seluruh Transaksi</h3>
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="small text-muted">
+                    <tr>
+                        <th>Waktu</th>
+                        <th>Kode Pesanan</th>
+                        <th>Pelanggan</th>
+                        <th>Detail Item</th>
+                        <th class="text-end">Total Pembayaran</th>
+                        <th class="text-end">Total Keuntungan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($transactions as $trx)
+                        <tr>
+                            <td>
+                                {{ \Carbon\Carbon::parse($trx->paid_at)->format('d M Y') }}<br>
+                                <small class="text-muted">{{ \Carbon\Carbon::parse($trx->paid_at)->format('H:i') }}</small>
+                            </td>
+                            <td>
+                                <strong>{{ $trx->kode_pesanan }}</strong><br>
+                                <span class="badge bg-light text-dark border">{{ strtoupper($trx->payment_method) }}</span>
+                            </td>
+                            <td>{{ $trx->nama_pelanggan ?? 'Walk-in / Guest' }}</td>
+                            <td style="max-width: 300px; white-space: normal;">
+                                <div class="small">
+                                    {{ $trx->item_details }}
+                                </div>
+                            </td>
+                            <td class="text-end fw-semibold">Rp {{ number_format((int) $trx->total_harga, 0, ',', '.') }}</td>
+                            <td class="text-end text-success">Rp {{ number_format((int) $trx->total_profit, 0, ',', '.') }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                Tidak ada detail transaksi pada periode ini.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 @endsection

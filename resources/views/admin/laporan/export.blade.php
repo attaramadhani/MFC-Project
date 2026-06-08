@@ -224,6 +224,49 @@
     </div>
     @endif
 
+    <div style="page-break-before: always;"></div>
+    
+    <div style="text-align: center; margin-bottom: 20px;">
+        <h3 style="margin:0; font-size: 16px;">DETAIL SELURUH TRANSAKSI</h3>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 5%;">No</th>
+                <th style="width: 15%;">Waktu</th>
+                <th style="width: 15%;">Kode Pesanan</th>
+                <th style="width: 15%;">Pelanggan</th>
+                <th style="width: 30%;">Item</th>
+                <th>Pendapatan</th>
+                <th>Keuntungan</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($transactions as $i => $trx)
+                <tr>
+                    <td class="text-center">{{ $i + 1 }}</td>
+                    <td class="text-center">
+                        {{ \Carbon\Carbon::parse($trx->paid_at)->format('d/m/Y') }}<br>
+                        {{ \Carbon\Carbon::parse($trx->paid_at)->format('H:i') }}
+                    </td>
+                    <td class="text-center">
+                        {{ $trx->kode_pesanan }}<br>
+                        <small>({{ strtoupper($trx->payment_method) }})</small>
+                    </td>
+                    <td class="text-center">{{ $trx->nama_pelanggan ?? 'Guest' }}</td>
+                    <td style="font-size: 10px;">{{ $trx->item_details }}</td>
+                    <td class="text-right">Rp {{ number_format((int) $trx->total_harga, 0, ',', '.') }}</td>
+                    <td class="text-right">Rp {{ number_format((int) $trx->total_profit, 0, ',', '.') }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="7" class="text-center">Tidak ada detail transaksi.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
     <div class="ttd-wrapper">
         <div class="ttd">
             Bangkalan, {{ now()->translatedFormat('d F Y') }}<br>

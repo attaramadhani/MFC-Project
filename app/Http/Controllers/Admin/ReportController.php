@@ -122,6 +122,36 @@ class ReportController extends Controller
             LIMIT 5
         ", $bindings);
 
+        $transactions = DB::select("
+            SELECT 
+                p.id_pesanan,
+                p.kode_pesanan,
+                p.paid_at,
+                p.total_harga,
+                p.payment_method,
+                u.name AS nama_pelanggan,
+                oi.total_item,
+                oi.item_details,
+                (oi.makanan_profit + oi.minuman_profit + oi.tambahan_profit) AS total_profit
+            FROM pesanan p
+            LEFT JOIN users u ON u.id = p.id_user
+            LEFT JOIN (
+                SELECT 
+                    dp.id_pesanan,
+                    SUM(dp.jumlah) AS total_item,
+                    STRING_AGG(m.nama || ' (' || dp.jumlah || 'x)', ', ') AS item_details,
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) IN ('geprek','crispy','gangnam','makanan') THEN dp.jumlah * (dp.harga - dp.diskon - dp.harga_beli) ELSE 0 END) AS makanan_profit,
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) = 'minuman' THEN dp.jumlah * (dp.harga - dp.diskon - dp.harga_beli) ELSE 0 END) AS minuman_profit,
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) NOT IN ('geprek','crispy','gangnam','makanan','minuman') THEN dp.jumlah * (dp.harga - dp.diskon - dp.harga_beli) ELSE 0 END) AS tambahan_profit
+                FROM detail_pesanan dp
+                JOIN menu m ON m.id_menu = dp.id_menu
+                GROUP BY dp.id_pesanan
+            ) oi ON oi.id_pesanan = p.id_pesanan
+            WHERE p.payment_status = 'paid'
+              AND {$whereClause}
+            ORDER BY p.paid_at DESC
+        ", $bindings);
+
         return view('admin.laporan.index', compact(
             'rows',
             'filterType',
@@ -137,7 +167,8 @@ class ReportController extends Controller
             'totalMakananProfit',
             'totalMinumanProfit',
             'totalTambahanProfit',
-            'topMenus'
+            'topMenus',
+            'transactions'
         ));
     }
 
@@ -232,6 +263,36 @@ class ReportController extends Controller
 
         $admin = Auth::user()->nama_user ?? 'Administrator';
 
+        $transactions = DB::select("
+            SELECT 
+                p.id_pesanan,
+                p.kode_pesanan,
+                p.paid_at,
+                p.total_harga,
+                p.payment_method,
+                u.name AS nama_pelanggan,
+                oi.total_item,
+                oi.item_details,
+                (oi.makanan_profit + oi.minuman_profit + oi.tambahan_profit) AS total_profit
+            FROM pesanan p
+            LEFT JOIN users u ON u.id = p.id_user
+            LEFT JOIN (
+                SELECT 
+                    dp.id_pesanan,
+                    SUM(dp.jumlah) AS total_item,
+                    STRING_AGG(m.nama || ' (' || dp.jumlah || 'x)', ', ') AS item_details,
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) IN ('geprek','crispy','gangnam','makanan') THEN dp.jumlah * (dp.harga - dp.diskon - dp.harga_beli) ELSE 0 END) AS makanan_profit,
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) = 'minuman' THEN dp.jumlah * (dp.harga - dp.diskon - dp.harga_beli) ELSE 0 END) AS minuman_profit,
+                    SUM(CASE WHEN LOWER(TRIM(m.kategori)) NOT IN ('geprek','crispy','gangnam','makanan','minuman') THEN dp.jumlah * (dp.harga - dp.diskon - dp.harga_beli) ELSE 0 END) AS tambahan_profit
+                FROM detail_pesanan dp
+                JOIN menu m ON m.id_menu = dp.id_menu
+                GROUP BY dp.id_pesanan
+            ) oi ON oi.id_pesanan = p.id_pesanan
+            WHERE p.payment_status = 'paid'
+              AND {$whereClause}
+            ORDER BY p.paid_at DESC
+        ", $bindings);
+
         $html = view('admin.laporan.export', compact(
             'rows',
             'from',
@@ -246,7 +307,8 @@ class ReportController extends Controller
             'totalMakananProfit',
             'totalMinumanProfit',
             'totalTambahanProfit',
-            'admin'
+            'admin',
+            'transactions'
         ))->render();
 
         $dompdf = new Dompdf(['isRemoteEnabled' => true]);
