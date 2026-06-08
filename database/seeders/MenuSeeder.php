@@ -182,9 +182,9 @@ class MenuSeeder extends Seeder
             // ========== MENU PAKET ==========
             [
                 'id_menu' => 14,
-                'nama' => 'PAKET HAJAT',
-                'deskripsi' => 'Paket lengkap kenyang! Geprek Jumbo + Dada Ayam + Teh Pucuk.',
-                'harga' => 25000.00,
+                'nama' => 'Paket Sultan',
+                'deskripsi' => 'Paket Sultan bikin kenyang maksimal! Geprek Jumbo + Dada Ayam + Teh Pucuk.',
+                'harga' => 27900.00,
                 'harga_beli' => 0, // dihitung dari komponen
                 'diskon' => 0,
                 'is_paket' => true,
@@ -195,9 +195,9 @@ class MenuSeeder extends Seeder
             ],
             [
                 'id_menu' => 15,
-                'nama' => 'PAKET HEMAT 1',
-                'deskripsi' => 'Pilihan ekonomis yang tetap nikmat. Crispy Hemat + Teh Pucuk.',
-                'harga' => 11000.00,
+                'nama' => 'Paket Pelajar',
+                'deskripsi' => 'Pilihan ramah kantong tapi nikmat. Crispy Hemat + Teh Pucuk.',
+                'harga' => 11900.00,
                 'harga_beli' => 0,
                 'diskon' => 0,
                 'is_paket' => true,
@@ -208,9 +208,9 @@ class MenuSeeder extends Seeder
             ],
             [
                 'id_menu' => 16,
-                'nama' => 'PAKET HEMAT 2',
-                'deskripsi' => 'Perpaduan sempurna! Gangnam Hemat + Le Minerale.',
-                'harga' => 13000.00,
+                'nama' => 'Paket Hemat',
+                'deskripsi' => 'Perpaduan pas untuk ngemil sedap! Gangnam Hemat + Le Minerale.',
+                'harga' => 14900.00,
                 'harga_beli' => 0,
                 'diskon' => 0,
                 'is_paket' => true,
@@ -221,9 +221,9 @@ class MenuSeeder extends Seeder
             ],
             [
                 'id_menu' => 17,
-                'nama' => 'PAKET HEMAT 3',
-                'deskripsi' => 'Menu favorit! Geprek Hemat + Sayap + Teh Pucuk.',
-                'harga' => 18000.00,
+                'nama' => 'Paket Puas',
+                'deskripsi' => 'Makan puas bayar pas! Geprek Hemat + Sayap + Teh Pucuk.',
+                'harga' => 19900.00,
                 'harga_beli' => 0,
                 'diskon' => 0,
                 'is_paket' => true,
@@ -236,20 +236,20 @@ class MenuSeeder extends Seeder
 
         // ========== KOMPOSISI PAKET ==========
         DB::table('paket_komposisi')->insert([
-            // PAKET HAJAT (14) = Geprek Jumbo (2) + Dada (11) + Teh Pucuk (13)
+            // Paket Sultan (14) = Geprek Jumbo (2) + Dada (11) + Teh Pucuk (13)
             ['id_menu_paket' => 14, 'id_menu_komponen' => 2,  'jumlah' => 1],
             ['id_menu_paket' => 14, 'id_menu_komponen' => 11, 'jumlah' => 1],
             ['id_menu_paket' => 14, 'id_menu_komponen' => 13, 'jumlah' => 1],
 
-            // PAKET HEMAT 1 (15) = Crispy Hemat (3) + Teh Pucuk (13)
+            // Paket Pelajar (15) = Crispy Hemat (3) + Teh Pucuk (13)
             ['id_menu_paket' => 15, 'id_menu_komponen' => 3,  'jumlah' => 1],
             ['id_menu_paket' => 15, 'id_menu_komponen' => 13, 'jumlah' => 1],
 
-            // PAKET HEMAT 2 (16) = Gangnam Hemat (5) + Le Minerale (12)
+            // Paket Hemat (16) = Gangnam Hemat (5) + Le Minerale (12)
             ['id_menu_paket' => 16, 'id_menu_komponen' => 5,  'jumlah' => 1],
             ['id_menu_paket' => 16, 'id_menu_komponen' => 12, 'jumlah' => 1],
 
-            // PAKET HEMAT 3 (17) = Geprek Hemat (1) + Sayap (9) + Teh Pucuk (13)
+            // Paket Puas (17) = Geprek Hemat (1) + Sayap (9) + Teh Pucuk (13)
             ['id_menu_paket' => 17, 'id_menu_komponen' => 1,  'jumlah' => 1],
             ['id_menu_paket' => 17, 'id_menu_komponen' => 9,  'jumlah' => 1],
             ['id_menu_paket' => 17, 'id_menu_komponen' => 13, 'jumlah' => 1],
