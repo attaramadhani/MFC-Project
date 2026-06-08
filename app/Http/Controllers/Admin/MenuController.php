@@ -16,7 +16,7 @@ class MenuController extends Controller
 
     public function create()
     {
-        $nonPaketMenus = DB::table('menu')->where('is_paket', 0)->get();
+        $nonPaketMenus = DB::table('menu')->where('is_paket', false)->get();
         return view('admin.menu.create', compact('nonPaketMenus'));
     }
 
@@ -45,9 +45,11 @@ class MenuController extends Controller
             $gambar = $newName;
         }
 
+        $isPaket = (bool) $request->is_paket;
+
         $id_menu = DB::table('menu')->insertGetId([
             'nama' => $request->nama,
-            'is_paket' => (int) $request->is_paket,
+            'is_paket' => $isPaket,
             'kategori' => $request->kategori,
             'harga' => (int) $request->harga,
             'harga_beli' => (int) $request->harga_beli,
@@ -58,7 +60,7 @@ class MenuController extends Controller
         ], 'id_menu');
 
         // Handle komposisi paket
-        if ((int) $request->is_paket === 1 && !empty($request->komposisi_id_menu)) {
+        if ($isPaket && !empty($request->komposisi_id_menu)) {
             foreach ($request->komposisi_id_menu as $index => $id_komponen) {
                 if ($id_komponen) {
                     DB::table('paket_komposisi')->insert([
@@ -78,7 +80,7 @@ class MenuController extends Controller
         $menu = DB::table('menu')->where('id_menu', $id)->first();
         abort_if(!$menu, 404);
 
-        $nonPaketMenus = DB::table('menu')->where('is_paket', 0)->get();
+        $nonPaketMenus = DB::table('menu')->where('is_paket', false)->get();
         $komposisi = [];
         if ($menu->is_paket) {
             $komposisi = DB::table('paket_komposisi')->where('id_menu_paket', $id)->get();
@@ -120,11 +122,13 @@ class MenuController extends Controller
             $gambar = $newName;
         }
 
+        $isPaket = (bool) $request->is_paket;
+
         DB::table('menu')
             ->where('id_menu', $id)
             ->update([
                 'nama' => $request->nama,
-                'is_paket' => (int) $request->is_paket,
+                'is_paket' => $isPaket,
                 'kategori' => $request->kategori,
                 'harga' => (int) $request->harga,
                 'harga_beli' => (int) $request->harga_beli,
@@ -136,7 +140,7 @@ class MenuController extends Controller
 
         // Sync komposisi paket
         DB::table('paket_komposisi')->where('id_menu_paket', $id)->delete();
-        if ((int) $request->is_paket === 1 && !empty($request->komposisi_id_menu)) {
+        if ($isPaket && !empty($request->komposisi_id_menu)) {
             foreach ($request->komposisi_id_menu as $index => $id_komponen) {
                 if ($id_komponen) {
                     DB::table('paket_komposisi')->insert([
