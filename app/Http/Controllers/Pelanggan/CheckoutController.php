@@ -270,7 +270,7 @@ class CheckoutController extends Controller
                     'payment_method' => $payment_method,
                     'payment_status' => 'unpaid',
                     'order_status' => $order_status_awal,
-                    'stok_dikurangi' => 1,
+                    'stok_dikurangi' => true,
                     'created_at' => now(),
                 ]);
 

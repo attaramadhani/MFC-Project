@@ -139,7 +139,7 @@ class OrderController extends Controller
                                 ->where('id_menu', $item->id_menu)
                                 ->increment('stok', $item->jumlah);
                         }
-                        $update['stok_dikurangi'] = 0;
+                        $update['stok_dikurangi'] = false;
                     }
                     break;
             }
