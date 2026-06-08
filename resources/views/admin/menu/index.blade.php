@@ -27,12 +27,13 @@
     <div class="card-body">
         <form action="{{ route('admin.menu.bulk_destroy') }}" method="POST" id="bulkDeleteForm" onsubmit="return confirm('Apakah Anda yakin ingin menghapus semua menu yang dipilih?')">
             @csrf
-            <div class="mb-3">
-                <button type="submit" class="btn btn-danger btn-sm" id="btnBulkDelete" disabled>
-                    Hapus yang Dipilih (<span id="selectedCount">0</span>)
-                </button>
-            </div>
-            <div class="table-responsive">
+        </form>
+        <div class="mb-3">
+            <button type="submit" form="bulkDeleteForm" class="btn btn-danger btn-sm" id="btnBulkDelete" disabled>
+                Hapus yang Dipilih (<span id="selectedCount">0</span>)
+            </button>
+        </div>
+        <div class="table-responsive">
             <table class="table table-hover align-middle">
                 <thead>
                     <tr>
@@ -54,7 +55,7 @@
                     @forelse($menus as $m)
                         <tr>
                             <td>
-                                <input class="form-check-input menu-checkbox" type="checkbox" name="menu_ids[]" value="{{ $m->id_menu }}">
+                                <input class="form-check-input menu-checkbox" type="checkbox" name="menu_ids[]" value="{{ $m->id_menu }}" form="bulkDeleteForm">
                             </td>
                             <td style="width: 80px;">
                                 @if(!empty($m->gambar))
@@ -114,7 +115,6 @@
                 </tbody>
             </table>
         </div>
-        </form>
     </div>
 </div>
 
