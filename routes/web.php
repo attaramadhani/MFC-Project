@@ -56,8 +56,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
     Route::get('/menu/create', [MenuController::class, 'create'])->name('menu.create');
+    Route::get('/menu/paket/create', [MenuController::class, 'createPaket'])->name('menu.paket.create');
     Route::post('/menu', [MenuController::class, 'store'])->name('menu.store');
     Route::get('/menu/{id}/edit', [MenuController::class, 'edit'])->name('menu.edit');
+    Route::get('/menu/{id}/paket/edit', [MenuController::class, 'editPaket'])->name('menu.paket.edit');
     Route::put('/menu/{id}', [MenuController::class, 'update'])->name('menu.update');
     Route::delete('/menu/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
 

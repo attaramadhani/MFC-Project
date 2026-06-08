@@ -16,8 +16,13 @@ class MenuController extends Controller
 
     public function create()
     {
+        return view('admin.menu.create');
+    }
+
+    public function createPaket()
+    {
         $nonPaketMenus = DB::table('menu')->where('is_paket', DB::raw('FALSE'))->get();
-        return view('admin.menu.create', compact('nonPaketMenus'));
+        return view('admin.menu.create_paket', compact('nonPaketMenus'));
     }
 
     public function store(Request $request)
@@ -27,7 +32,7 @@ class MenuController extends Controller
             'is_paket' => 'required|boolean',
             'kategori' => 'required|in:makanan,minuman,paket,tambahan',
             'harga' => 'required|integer|min:0',
-            'harga_beli' => 'required|integer|min:0',
+            'harga_beli' => 'nullable|integer|min:0',
             'stok' => 'required|integer|min:0',
             'diskon' => 'nullable|integer|min:0|max:100',
             'deskripsi' => 'nullable|string',
@@ -46,13 +51,25 @@ class MenuController extends Controller
         }
 
         $isPaket = $request->is_paket ? DB::raw('TRUE') : DB::raw('FALSE');
+        $harga_beli = (int) ($request->harga_beli ?? 0);
+
+        if ($request->is_paket && !empty($request->komposisi_id_menu)) {
+            $harga_beli = 0;
+            $komponenMenus = DB::table('menu')->whereIn('id_menu', $request->komposisi_id_menu)->get()->keyBy('id_menu');
+            foreach ($request->komposisi_id_menu as $id_komponen) {
+                $qty = $request->komposisi_jumlah[$id_komponen] ?? 1;
+                if (isset($komponenMenus[$id_komponen])) {
+                    $harga_beli += $komponenMenus[$id_komponen]->harga_beli * $qty;
+                }
+            }
+        }
 
         $id_menu = DB::table('menu')->insertGetId([
             'nama' => $request->nama,
             'is_paket' => $isPaket,
             'kategori' => $request->kategori,
             'harga' => (int) $request->harga,
-            'harga_beli' => (int) $request->harga_beli,
+            'harga_beli' => $harga_beli,
             'stok' => (int) $request->stok,
             'diskon' => (int) ($request->diskon ?? 0),
             'deskripsi' => $request->deskripsi,
@@ -60,12 +77,12 @@ class MenuController extends Controller
         ], 'id_menu');
 
         if ($request->is_paket && !empty($request->komposisi_id_menu)) {
-            foreach ($request->komposisi_id_menu as $index => $id_komponen) {
+            foreach ($request->komposisi_id_menu as $id_komponen) {
                 if ($id_komponen) {
                     DB::table('paket_komposisi')->insert([
                         'id_menu_paket' => $id_menu,
                         'id_menu_komponen' => $id_komponen,
-                        'jumlah' => $request->komposisi_jumlah[$index] ?? 1,
+                        'jumlah' => $request->komposisi_jumlah[$id_komponen] ?? 1,
                     ]);
                 }
             }
@@ -79,13 +96,18 @@ class MenuController extends Controller
         $menu = DB::table('menu')->where('id_menu', $id)->first();
         abort_if(!$menu, 404);
 
-        $nonPaketMenus = DB::table('menu')->where('is_paket', DB::raw('FALSE'))->get();
-        $komposisi = [];
-        if ($menu->is_paket) {
-            $komposisi = DB::table('paket_komposisi')->where('id_menu_paket', $id)->get();
-        }
+        return view('admin.menu.edit', compact('menu'));
+    }
 
-        return view('admin.menu.edit', compact('menu', 'nonPaketMenus', 'komposisi'));
+    public function editPaket($id)
+    {
+        $menu = DB::table('menu')->where('id_menu', $id)->first();
+        abort_if(!$menu || !$menu->is_paket, 404);
+
+        $nonPaketMenus = DB::table('menu')->where('is_paket', DB::raw('FALSE'))->get();
+        $komposisi = DB::table('paket_komposisi')->where('id_menu_paket', $id)->get();
+
+        return view('admin.menu.edit_paket', compact('menu', 'nonPaketMenus', 'komposisi'));
     }
 
     public function update(Request $request, $id)
@@ -98,7 +120,7 @@ class MenuController extends Controller
             'is_paket' => 'required|boolean',
             'kategori' => 'required|in:makanan,minuman,paket,tambahan',
             'harga' => 'required|integer|min:0',
-            'harga_beli' => 'required|integer|min:0',
+            'harga_beli' => 'nullable|integer|min:0',
             'stok' => 'required|integer|min:0',
             'diskon' => 'nullable|integer|min:0|max:100',
             'deskripsi' => 'nullable|string',
@@ -122,6 +144,18 @@ class MenuController extends Controller
         }
 
         $isPaket = $request->is_paket ? DB::raw('TRUE') : DB::raw('FALSE');
+        $harga_beli = (int) ($request->harga_beli ?? 0);
+
+        if ($request->is_paket && !empty($request->komposisi_id_menu)) {
+            $harga_beli = 0;
+            $komponenMenus = DB::table('menu')->whereIn('id_menu', $request->komposisi_id_menu)->get()->keyBy('id_menu');
+            foreach ($request->komposisi_id_menu as $id_komponen) {
+                $qty = $request->komposisi_jumlah[$id_komponen] ?? 1;
+                if (isset($komponenMenus[$id_komponen])) {
+                    $harga_beli += $komponenMenus[$id_komponen]->harga_beli * $qty;
+                }
+            }
+        }
 
         DB::table('menu')
             ->where('id_menu', $id)
@@ -130,7 +164,7 @@ class MenuController extends Controller
                 'is_paket' => $isPaket,
                 'kategori' => $request->kategori,
                 'harga' => (int) $request->harga,
-                'harga_beli' => (int) $request->harga_beli,
+                'harga_beli' => $harga_beli,
                 'stok' => (int) $request->stok,
                 'diskon' => (int) ($request->diskon ?? 0),
                 'deskripsi' => $request->deskripsi,
@@ -140,12 +174,12 @@ class MenuController extends Controller
         // Sync komposisi paket
         DB::table('paket_komposisi')->where('id_menu_paket', $id)->delete();
         if ($request->is_paket && !empty($request->komposisi_id_menu)) {
-            foreach ($request->komposisi_id_menu as $index => $id_komponen) {
+            foreach ($request->komposisi_id_menu as $id_komponen) {
                 if ($id_komponen) {
                     DB::table('paket_komposisi')->insert([
                         'id_menu_paket' => $id,
                         'id_menu_komponen' => $id_komponen,
-                        'jumlah' => $request->komposisi_jumlah[$index] ?? 1,
+                        'jumlah' => $request->komposisi_jumlah[$id_komponen] ?? 1,
                     ]);
                 }
             }

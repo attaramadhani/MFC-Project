@@ -13,9 +13,14 @@
         </div>
     </div>
 
-    <a href="{{ route('admin.menu.create') }}" class="btn btn-main text-white">
-        + Tambah Menu
-    </a>
+    <div class="d-flex gap-2">
+        <a href="{{ route('admin.menu.create') }}" class="btn btn-main text-white">
+            + Tambah Menu
+        </a>
+        <a href="{{ route('admin.menu.paket.create') }}" class="btn btn-warning text-dark">
+            + Tambah Paket
+        </a>
+    </div>
 </div>
 
 <div class="card shadow-sm border-0 rounded-4">
@@ -68,10 +73,11 @@
                             <td>{{ $m->diskon ? $m->diskon . '%' : '-' }}</td>
 
                             <td class="text-end text-nowrap">
-                                <a href="{{ route('admin.menu.edit', $m->id_menu) }}"
-                                   class="btn btn-sm btn-outline-primary">
-                                    Edit
-                                </a>
+                                @if($m->is_paket)
+                                    <a href="{{ route('admin.menu.paket.edit', $m->id_menu) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                @else
+                                    <a href="{{ route('admin.menu.edit', $m->id_menu) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                @endif
 
                                 <form action="{{ route('admin.menu.destroy', $m->id_menu) }}"
                                       method="POST"
