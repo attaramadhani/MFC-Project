@@ -129,12 +129,12 @@ class ReportController extends Controller
                 p.paid_at,
                 p.total_harga,
                 p.payment_method,
-                u.name AS nama_pelanggan,
+                u.nama_user AS nama_pelanggan,
                 oi.total_item,
                 oi.item_details,
                 (oi.makanan_profit + oi.minuman_profit + oi.tambahan_profit) AS total_profit
             FROM pesanan p
-            LEFT JOIN users u ON u.id = p.id_user
+            LEFT JOIN users u ON u.id_user = p.id_user
             LEFT JOIN (
                 SELECT 
                     dp.id_pesanan,
@@ -270,12 +270,12 @@ class ReportController extends Controller
                 p.paid_at,
                 p.total_harga,
                 p.payment_method,
-                u.name AS nama_pelanggan,
+                u.nama_user AS nama_pelanggan,
                 oi.total_item,
                 oi.item_details,
                 (oi.makanan_profit + oi.minuman_profit + oi.tambahan_profit) AS total_profit
             FROM pesanan p
-            LEFT JOIN users u ON u.id = p.id_user
+            LEFT JOIN users u ON u.id_user = p.id_user
             LEFT JOIN (
                 SELECT 
                     dp.id_pesanan,
