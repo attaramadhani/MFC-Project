@@ -144,7 +144,7 @@ class MidtransController extends Controller
                         ->where('id_menu', $item->id_menu)
                         ->increment('stok', $item->jumlah);
                 }
-                $updatePesanan['stok_dikurangi'] = false;
+                $updatePesanan['stok_dikurangi'] = DB::raw('FALSE');
             }
 
             DB::table('pesanan')
