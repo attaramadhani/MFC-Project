@@ -36,12 +36,16 @@
             </div>
 
             <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Harga Jual Paket (Otomatis)</label>
-                    <input type="number" name="harga" id="harga_jual_paket" class="form-control bg-light" value="0" readonly>
-                    <div class="form-text text-muted">Harga jual dihitung otomatis dari komponen.</div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Total Harga Komponen (Asli)</label>
+                    <input type="text" id="total_harga_komponen" class="form-control bg-light" value="Rp 0" readonly>
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Harga Jual Paket (Bisa Diubah)</label>
+                    <input type="number" name="harga" id="harga_jual_paket" class="form-control" value="{{ old('harga', 0) }}" required>
+                    <div class="form-text text-muted">Bebas diatur lebih murah/mahal dari harga asli.</div>
+                </div>
+                <div class="col-md-4 mb-3">
                     <label class="form-label">Diskon (%)</label>
                     <input type="number" name="diskon" class="form-control" min="0" max="100" value="{{ old('diskon', 0) }}">
                 </div>
@@ -101,6 +105,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     const checkboxes = document.querySelectorAll('.check-komponen');
     const hargaJualInput = document.getElementById('harga_jual_paket');
+    const totalHargaKomponenInput = document.getElementById('total_harga_komponen');
+    let userHasEdited = false;
+
+    hargaJualInput.addEventListener('input', function() {
+        userHasEdited = true;
+    });
 
     function hitungTotalHarga() {
         let total = 0;
@@ -114,7 +124,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 total += (harga * qty);
             }
         });
-        hargaJualInput.value = total;
+        totalHargaKomponenInput.value = 'Rp ' + total.toLocaleString('id-ID');
+        if (!userHasEdited) {
+            hargaJualInput.value = total;
+        }
     }
 
     checkboxes.forEach(function(checkbox) {
