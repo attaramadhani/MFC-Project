@@ -26,3 +26,5 @@ check_db.php
 sync_payment.php
 *.doc
 *.docx
+
+.vercel
