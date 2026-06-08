@@ -263,6 +263,17 @@ class ReportController extends Controller
 
         $admin = Auth::user()->nama_user ?? 'Administrator';
 
+        if ($filterType === 'weekly') {
+            $from = "Pekan " . str_replace('-W', ' Tahun ', request('week', now()->format('Y-\Ww')));
+            $to = "Pekan " . str_replace('-W', ' Tahun ', request('week', now()->format('Y-\Ww')));
+        } elseif ($filterType === 'monthly') {
+            $from = "1 " . \Carbon\Carbon::parse($selectedMonth . '-01')->translatedFormat('F Y');
+            $to = \Carbon\Carbon::parse($selectedMonth . '-01')->endOfMonth()->translatedFormat('d F Y');
+        } elseif ($filterType === 'yearly') {
+            $from = "1 Januari " . $selectedYear;
+            $to = "31 Desember " . $selectedYear;
+        }
+
         $transactions = DB::select("
             SELECT 
                 p.id_pesanan,
