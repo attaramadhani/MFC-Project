@@ -63,9 +63,12 @@ class MenuController extends Controller
                       
                     if ($response->successful()) {
                         $gambar = $newName;
+                    } else {
+                        // Throw exception to see the error from Supabase
+                        throw new \Exception("Supabase Upload Failed: " . $response->body());
                     }
                 } catch (\Exception $e) {
-                    $gambar = null;
+                    throw $e; // Re-throw to see it
                 }
             } else {
                 // Local fallback
@@ -188,9 +191,11 @@ class MenuController extends Controller
                             ])->delete($deleteUrl);
                         }
                         $gambar = $newName;
+                    } else {
+                        throw new \Exception("Supabase Upload Failed: " . $response->body());
                     }
                 } catch (\Exception $e) {
-                    // Ignore
+                    throw $e;
                 }
             } else {
                 try {
