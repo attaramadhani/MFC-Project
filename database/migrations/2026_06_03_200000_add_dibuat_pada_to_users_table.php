@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->timestamp('dibuat_pada')->useCurrent()->nullable();
-        });
+        if (!Schema::hasColumn('users', 'dibuat_pada')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->timestamp('dibuat_pada')->useCurrent()->nullable();
+            });
+        }
     }
 
     /**
