@@ -87,13 +87,11 @@ class MenuController extends Controller
 
         if ($request->is_paket && !empty($request->komposisi_id_menu)) {
             $harga_beli = 0;
-            $harga_jual = 0;
             $komponenMenus = DB::table('menu')->whereIn('id_menu', $request->komposisi_id_menu)->get()->keyBy('id_menu');
             foreach ($request->komposisi_id_menu as $id_komponen) {
                 $qty = $request->komposisi_jumlah[$id_komponen] ?? 1;
                 if (isset($komponenMenus[$id_komponen])) {
                     $harga_beli += $komponenMenus[$id_komponen]->harga_beli * $qty;
-                    $harga_jual += $komponenMenus[$id_komponen]->harga * $qty;
                 }
             }
         }
@@ -216,13 +214,11 @@ class MenuController extends Controller
 
         if ($request->is_paket && !empty($request->komposisi_id_menu)) {
             $harga_beli = 0;
-            $harga_jual = 0;
             $komponenMenus = DB::table('menu')->whereIn('id_menu', $request->komposisi_id_menu)->get()->keyBy('id_menu');
             foreach ($request->komposisi_id_menu as $id_komponen) {
                 $qty = $request->komposisi_jumlah[$id_komponen] ?? 1;
                 if (isset($komponenMenus[$id_komponen])) {
                     $harga_beli += $komponenMenus[$id_komponen]->harga_beli * $qty;
-                    $harga_jual += $komponenMenus[$id_komponen]->harga * $qty;
                 }
             }
         }
