@@ -53,12 +53,19 @@ if (Auth::check()) {
         MFC
     </a>
 
-    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
-      data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas"
+      data-bs-target="#navbarNav" aria-controls="navbarNav" aria-label="Toggle navigation" style="padding: 0; color: var(--red-main);">
+      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+      </svg>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarNav">
+    <div class="offcanvas-lg offcanvas-end" tabindex="-1" id="navbarNav" aria-labelledby="navbarNavLabel">
+      <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title fw-bold" id="navbarNavLabel" style="color: var(--red-main);">Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#navbarNav" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
       <ul class="navbar-nav nav-main mx-auto mb-2 mb-lg-0">
         <li class="nav-item">
           <a class="nav-link" href="{{ $homeUrl }}#menu">Menu</a>
@@ -106,6 +113,7 @@ if (Auth::check()) {
           </li>
         @endauth
       </ul>
+      </div>
     </div>
   </div>
 </nav>

@@ -61,9 +61,11 @@ class OrderController extends Controller
 
         $items = DB::table('detail_pesanan as dp')
             ->join('menu as m', 'm.id_menu', '=', 'dp.id_menu')
+            ->leftJoin('menu as mp', 'mp.id_menu', '=', 'dp.id_menu_paket')
             ->where('dp.id_pesanan', $id)
+            ->orderBy('dp.id_menu_paket') // Group pakets together visually if needed
             ->orderBy('m.nama')
-            ->get(['dp.*', 'm.nama']);
+            ->get(['dp.*', 'm.nama', 'mp.nama as nama_paket']);
 
         $pay = DB::table('pembayaran')
             ->where('id_pesanan', $id)

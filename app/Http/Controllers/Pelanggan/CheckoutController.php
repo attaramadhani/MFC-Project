@@ -207,7 +207,8 @@ class CheckoutController extends Controller
                         'm.harga',
                         'm.harga_beli',
                         'm.diskon',
-                        'm.stok'
+                        'm.stok',
+                        'm.is_paket'
                     ]);
 
                 if ($items->isEmpty()) {
@@ -275,20 +276,66 @@ class CheckoutController extends Controller
                 ], 'id_pesanan');
 
                 foreach ($items as $item) {
-                    $diskon_amount = $item->harga * ($item->diskon ?? 0) / 100;
-                    DB::table('detail_pesanan')->insert([
-                        'id_pesanan' => $id_pesanan,
-                        'id_menu' => $item->id_menu,
-                        'jumlah' => $item->jumlah,
-                        'harga' => $item->harga,
-                        'harga_beli' => $item->harga_beli,
-                        'diskon' => $diskon_amount,
-                    ]);
+                    $qty = (int) $item->jumlah;
 
-                    // Potong stok menu
-                    DB::table('menu')
-                        ->where('id_menu', $item->id_menu)
-                        ->decrement('stok', $item->jumlah);
+                    if ($item->is_paket) {
+                        // PAKET: pecah ke komponen
+                        $komponens = DB::table('paket_komposisi as pk')
+                            ->join('menu as m', 'm.id_menu', '=', 'pk.id_menu_komponen')
+                            ->where('pk.id_menu_paket', $item->id_menu)
+                            ->get(['pk.id_menu_komponen', 'pk.jumlah as qty_komponen', 'm.harga as harga_komponen', 'm.harga_beli as harga_beli_komponen']);
+
+                        // Hitung total harga komponen untuk alokasi proporsional
+                        $totalHargaKomponen = 0;
+                        foreach ($komponens as $k) {
+                            $totalHargaKomponen += (int) $k->harga_komponen * (int) $k->qty_komponen;
+                        }
+
+                        $harga_paket = (int) $item->harga;
+                        $diskon_percent = (int) ($item->diskon ?? 0);
+                        $harga_paket_final = $harga_paket - ($harga_paket * $diskon_percent / 100);
+
+                        // Insert per-komponen
+                        foreach ($komponens as $k) {
+                            $hargaKomponenTotal = (int) $k->harga_komponen * (int) $k->qty_komponen;
+                            // Alokasi proporsional harga jual paket ke komponen
+                            $alokasi_harga = $totalHargaKomponen > 0
+                                ? round($hargaKomponenTotal / $totalHargaKomponen * $harga_paket_final)
+                                : 0;
+
+                            DB::table('detail_pesanan')->insert([
+                                'id_pesanan'   => $id_pesanan,
+                                'id_menu'       => $k->id_menu_komponen,
+                                'id_menu_paket' => $item->id_menu,
+                                'jumlah'        => (int) $k->qty_komponen * $qty,
+                                'harga'         => $alokasi_harga,
+                                'harga_beli'    => (int) $k->harga_beli_komponen * (int) $k->qty_komponen,
+                                'diskon'        => 0,
+                            ]);
+                        }
+
+                        // Potong stok paket (bukan komponen)
+                        DB::table('menu')
+                            ->where('id_menu', $item->id_menu)
+                            ->decrement('stok', $qty);
+                    } else {
+                        // ITEM BIASA
+                        $diskon_amount = $item->harga * ($item->diskon ?? 0) / 100;
+                        DB::table('detail_pesanan')->insert([
+                            'id_pesanan'   => $id_pesanan,
+                            'id_menu'       => $item->id_menu,
+                            'id_menu_paket' => null,
+                            'jumlah'        => $qty,
+                            'harga'         => $item->harga,
+                            'harga_beli'    => $item->harga_beli,
+                            'diskon'        => $diskon_amount,
+                        ]);
+
+                        // Potong stok menu
+                        DB::table('menu')
+                            ->where('id_menu', $item->id_menu)
+                            ->decrement('stok', $qty);
+                    }
                 }
 
                 DB::table('keranjang')

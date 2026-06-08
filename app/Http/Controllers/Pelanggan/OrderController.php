@@ -56,12 +56,15 @@ class OrderController extends Controller
 
         $items = DB::table('detail_pesanan as d')
             ->join('menu as m', 'm.id_menu', '=', 'd.id_menu')
+            ->leftJoin('menu as mp', 'mp.id_menu', '=', 'd.id_menu_paket')
             ->where('d.id_pesanan', $id)
             ->get([
                 'd.jumlah',
                 'd.harga',
                 'd.catatan_item',
+                'd.id_menu_paket',
                 'm.nama',
+                'mp.nama as nama_paket'
         ]);
 
         $pembayaran = DB::table('pembayaran')
@@ -175,12 +178,15 @@ class OrderController extends Controller
 
         $items = DB::table('detail_pesanan as d')
             ->join('menu as m', 'm.id_menu', '=', 'd.id_menu')
+            ->leftJoin('menu as mp', 'mp.id_menu', '=', 'd.id_menu_paket')
             ->where('d.id_pesanan', $id)
             ->get([
                 'd.jumlah',
                 'd.harga',
                 'd.catatan_item',
+                'd.id_menu_paket',
                 'm.nama',
+                'mp.nama as nama_paket'
             ]);
 
         $pembayaran = DB::table('pembayaran')

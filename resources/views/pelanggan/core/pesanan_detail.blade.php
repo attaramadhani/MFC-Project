@@ -98,27 +98,78 @@
         Tidak ada item pada pesanan ini.
       </div>
     @else
-      @foreach ($items as $row)
-        @php
-          $nama = $row->nama;
-          $jumlah = (int) $row->jumlah;
-          $harga = (float) $row->harga;
-          $subtotal = $jumlah * $harga;
-        @endphp
+      @php
+        $groupedItems = [];
+        foreach ($items as $row) {
+            if ($row->id_menu_paket) {
+                // Group by id_menu_paket
+                if (!isset($groupedItems['paket_' . $row->id_menu_paket])) {
+                    $groupedItems['paket_' . $row->id_menu_paket] = [
+                        'is_paket' => true,
+                        'nama_paket' => $row->nama_paket,
+                        'jumlah_paket' => 0, // We need to calculate this from components
+                        'total_harga' => 0,
+                        'komponen' => []
+                    ];
+                }
+                $groupedItems['paket_' . $row->id_menu_paket]['komponen'][] = $row;
+                $groupedItems['paket_' . $row->id_menu_paket]['total_harga'] += ($row->harga * $row->jumlah);
+            } else {
+                // Standalone item
+                $groupedItems[] = [
+                    'is_paket' => false,
+                    'item' => $row
+                ];
+            }
+        }
+      @endphp
 
-        <div class="order-detail-item">
-          <div class="order-detail-item-main">
-            <div class="fw-semibold">
-              {{ $nama }}
+      @foreach ($groupedItems as $group)
+        @if ($group['is_paket'])
+            @php
+                $nama = $group['nama_paket'];
+                // Assume the paket was bought 'n' times based on the first component's qty if we knew the ratio,
+                // but since qty is multiplied, let's just show the package and its total price.
+                // We'll just display it as 1 Paket group with total subtotal.
+                $subtotal = $group['total_harga'];
+            @endphp
+            <div class="order-detail-item mb-2 p-2 border rounded bg-light">
+                <div class="order-detail-item-main">
+                    <div class="fw-bold text-primary">
+                    📦 {{ $nama }}
+                    </div>
+                    <ul class="small text-muted mb-0 ps-3">
+                        @foreach($group['komponen'] as $k)
+                            <li>{{ $k->nama }} (x{{ $k->jumlah }})</li>
+                        @endforeach
+                    </ul>
+                </div>
+                <div class="order-detail-item-subtotal fw-semibold">
+                    Rp {{ number_format($subtotal, 0, ',', '.') }}
+                </div>
             </div>
-            <div class="small text-muted">
-              x {{ $jumlah }} • Rp {{ number_format($harga, 0, ',', '.') }}
+        @else
+            @php
+                $row = $group['item'];
+                $nama = $row->nama;
+                $jumlah = (int) $row->jumlah;
+                $harga = (float) $row->harga;
+                $subtotal = $jumlah * $harga;
+            @endphp
+            <div class="order-detail-item">
+                <div class="order-detail-item-main">
+                    <div class="fw-semibold">
+                    {{ $nama }}
+                    </div>
+                    <div class="small text-muted">
+                    x {{ $jumlah }} • Rp {{ number_format($harga, 0, ',', '.') }}
+                    </div>
+                </div>
+                <div class="order-detail-item-subtotal">
+                    Rp {{ number_format($subtotal, 0, ',', '.') }}
+                </div>
             </div>
-          </div>
-          <div class="order-detail-item-subtotal">
-            Rp {{ number_format($subtotal, 0, ',', '.') }}
-          </div>
-        </div>
+        @endif
       @endforeach
     @endif
   </div>

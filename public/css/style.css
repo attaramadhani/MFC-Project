@@ -27,6 +27,7 @@ body {
     background: var(--off-white);
     color: var(--text-dark);
     animation: page-fade 0.3s ease-out;
+    overflow-x: hidden;
 }
 
 @keyframes page-fade {
@@ -1001,3 +1002,41 @@ body {
 .mfc-toast--success .mfc-toast-progress { background: #16A34A; }
 .mfc-toast--error   .mfc-toast-progress { background: #DC2626; }
 .mfc-toast--info    .mfc-toast-progress { background: #2563EB; }
+
+/* ── MOBILE ENHANCEMENTS & INTERACTIONS ── */
+@media (max-width: 768px) {
+    .hero-section {
+        padding-top: 5rem;
+        padding-bottom: 2.5rem;
+        min-height: auto;
+        text-align: center;
+    }
+    .hero-title {
+        font-size: 2.2rem;
+    }
+    .hero-subtitle {
+        font-size: 0.95rem;
+    }
+    .section-title {
+        font-size: 1.4rem;
+    }
+    .menu-card {
+        margin-bottom: 0.5rem;
+    }
+    .navbar-collapse {
+        background: var(--white);
+        padding: 1rem;
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        margin-top: 0.5rem;
+        border: 1px solid var(--border);
+    }
+}
+
+.hover-scale {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-scale:hover {
+    transform: scale(1.03);
+    box-shadow: 0 10px 30px rgba(192, 57, 43, 0.2) !important;
+}

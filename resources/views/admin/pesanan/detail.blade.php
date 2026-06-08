@@ -78,28 +78,67 @@
     <div class="mb-3 pb-2 border-bottom">
         <div class="small text-muted mb-2 fw-semibold">Item pesanan</div>
 
-        @forelse($items as $row)
-            @php
-                $jumlah = (int) $row->jumlah;
-                $harga = (int) $row->harga;
-                $sub = $jumlah * $harga;
-            @endphp
+        @php
+            $groupedItems = [];
+            foreach ($items as $row) {
+                if ($row->id_menu_paket) {
+                    if (!isset($groupedItems['paket_' . $row->id_menu_paket])) {
+                        $groupedItems['paket_' . $row->id_menu_paket] = [
+                            'is_paket' => true,
+                            'nama_paket' => $row->nama_paket,
+                            'total_harga' => 0,
+                            'komponen' => []
+                        ];
+                    }
+                    $groupedItems['paket_' . $row->id_menu_paket]['komponen'][] = $row;
+                    $groupedItems['paket_' . $row->id_menu_paket]['total_harga'] += ($row->harga * $row->jumlah);
+                } else {
+                    $groupedItems[] = [
+                        'is_paket' => false,
+                        'item' => $row
+                    ];
+                }
+            }
+        @endphp
 
-            <div class="d-flex justify-content-between py-2">
-                <div>
-                    <div class="fw-semibold">{{ $row->nama }}</div>
-                    <div class="small text-muted">
-                        x {{ $jumlah }} • Rp {{ number_format($harga,0,',','.') }}
-                        @if (!empty($row->catatan_item))
-                            <br><span class="fst-italic">Catatan: {{ $row->catatan_item }}</span>
-                        @endif
+        @forelse($groupedItems as $group)
+            @if($group['is_paket'])
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <div>
+                        <div class="fw-semibold text-primary">📦 {{ $group['nama_paket'] }}</div>
+                        <ul class="small text-muted mb-0 ps-3">
+                            @foreach($group['komponen'] as $k)
+                                <li>{{ $k->nama }} (x{{ (int)$k->jumlah }})</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    <div class="fw-semibold small">
+                        Rp {{ number_format($group['total_harga'],0,',','.') }}
                     </div>
                 </div>
+            @else
+                @php
+                    $row = $group['item'];
+                    $jumlah = (int) $row->jumlah;
+                    $harga = (int) $row->harga;
+                    $sub = $jumlah * $harga;
+                @endphp
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <div>
+                        <div class="fw-semibold">{{ $row->nama }}</div>
+                        <div class="small text-muted">
+                            x {{ $jumlah }} • Rp {{ number_format($harga,0,',','.') }}
+                            @if (!empty($row->catatan_item))
+                                <br><span class="fst-italic">Catatan: {{ $row->catatan_item }}</span>
+                            @endif
+                        </div>
+                    </div>
 
-                <div class="fw-semibold small">
-                    Rp {{ number_format($sub,0,',','.') }}
+                    <div class="fw-semibold small">
+                        Rp {{ number_format($sub,0,',','.') }}
+                    </div>
                 </div>
-            </div>
+            @endif
         @empty
             <div class="small text-muted">Tidak ada item untuk pesanan ini.</div>
         @endforelse

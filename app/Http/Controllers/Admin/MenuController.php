@@ -16,7 +16,8 @@ class MenuController extends Controller
 
     public function create()
     {
-        return view('admin.menu.create');
+        $nonPaketMenus = DB::table('menu')->where('is_paket', 0)->get();
+        return view('admin.menu.create', compact('nonPaketMenus'));
     }
 
     public function store(Request $request)
@@ -31,6 +32,8 @@ class MenuController extends Controller
             'diskon' => 'nullable|integer|min:0|max:100',
             'deskripsi' => 'nullable|string',
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp',
+            'komposisi_id_menu' => 'nullable|array',
+            'komposisi_jumlah' => 'nullable|array',
         ]);
 
         $gambar = null;
@@ -42,7 +45,7 @@ class MenuController extends Controller
             $gambar = $newName;
         }
 
-        DB::table('menu')->insert([
+        $id_menu = DB::table('menu')->insertGetId([
             'nama' => $request->nama,
             'is_paket' => (int) $request->is_paket,
             'kategori' => $request->kategori,
@@ -52,7 +55,20 @@ class MenuController extends Controller
             'diskon' => (int) ($request->diskon ?? 0),
             'deskripsi' => $request->deskripsi,
             'gambar' => $gambar,
-        ]);
+        ], 'id_menu');
+
+        // Handle komposisi paket
+        if ((int) $request->is_paket === 1 && !empty($request->komposisi_id_menu)) {
+            foreach ($request->komposisi_id_menu as $index => $id_komponen) {
+                if ($id_komponen) {
+                    DB::table('paket_komposisi')->insert([
+                        'id_menu_paket' => $id_menu,
+                        'id_menu_komponen' => $id_komponen,
+                        'jumlah' => $request->komposisi_jumlah[$index] ?? 1,
+                    ]);
+                }
+            }
+        }
 
         return redirect()->route('admin.menu.index')->with('success', 'Menu ditambahkan.');
     }
@@ -62,7 +78,13 @@ class MenuController extends Controller
         $menu = DB::table('menu')->where('id_menu', $id)->first();
         abort_if(!$menu, 404);
 
-        return view('admin.menu.edit', compact('menu'));
+        $nonPaketMenus = DB::table('menu')->where('is_paket', 0)->get();
+        $komposisi = [];
+        if ($menu->is_paket) {
+            $komposisi = DB::table('paket_komposisi')->where('id_menu_paket', $id)->get();
+        }
+
+        return view('admin.menu.edit', compact('menu', 'nonPaketMenus', 'komposisi'));
     }
 
     public function update(Request $request, $id)
@@ -80,6 +102,8 @@ class MenuController extends Controller
             'diskon' => 'nullable|integer|min:0|max:100',
             'deskripsi' => 'nullable|string',
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp',
+            'komposisi_id_menu' => 'nullable|array',
+            'komposisi_jumlah' => 'nullable|array',
         ]);
 
         $gambar = $menu->gambar;
@@ -110,6 +134,20 @@ class MenuController extends Controller
                 'gambar' => $gambar,
             ]);
 
+        // Sync komposisi paket
+        DB::table('paket_komposisi')->where('id_menu_paket', $id)->delete();
+        if ((int) $request->is_paket === 1 && !empty($request->komposisi_id_menu)) {
+            foreach ($request->komposisi_id_menu as $index => $id_komponen) {
+                if ($id_komponen) {
+                    DB::table('paket_komposisi')->insert([
+                        'id_menu_paket' => $id,
+                        'id_menu_komponen' => $id_komponen,
+                        'jumlah' => $request->komposisi_jumlah[$index] ?? 1,
+                    ]);
+                }
+            }
+        }
+
         return redirect()->route('admin.menu.index')->with('success', 'Menu diupdate.');
     }
 
@@ -123,6 +161,11 @@ class MenuController extends Controller
 
         // Hapus riwayat pesanan (detail) yang terkait dengan menu ini
         DB::table('detail_pesanan')->where('id_menu', $id)->delete();
+
+        // Hapus komposisi paket jika ini paket
+        DB::table('paket_komposisi')->where('id_menu_paket', $id)->delete();
+        // Hapus komposisi jika ini komponen yang dipakai di paket
+        DB::table('paket_komposisi')->where('id_menu_komponen', $id)->delete();
 
         DB::table('menu')->where('id_menu', $id)->delete();
 

@@ -172,32 +172,62 @@
 
     <div class="section-title">Rincian Pesanan</div>
 
-    @foreach ($items as $row)
         @php
-            $nama = $row->nama;
-            $jumlah = (int) $row->jumlah;
-            $harga = (float) $row->harga;
-            $subtotal = $jumlah * $harga;
+            $groupedItems = [];
+            foreach ($items as $row) {
+                if ($row->id_menu_paket) {
+                    if (!isset($groupedItems['paket_' . $row->id_menu_paket])) {
+                        $groupedItems['paket_' . $row->id_menu_paket] = [
+                            'is_paket' => true,
+                            'nama_paket' => $row->nama_paket,
+                            'total_harga' => 0,
+                            'komponen' => []
+                        ];
+                    }
+                    $groupedItems['paket_' . $row->id_menu_paket]['komponen'][] = $row;
+                    $groupedItems['paket_' . $row->id_menu_paket]['total_harga'] += ($row->harga * $row->jumlah);
+                } else {
+                    $groupedItems[] = [
+                        'is_paket' => false,
+                        'item' => $row
+                    ];
+                }
+            }
         @endphp
 
-        <div class="item-row">
-            <div class="item-name">{{ $nama }}</div>
-            <div class="item-meta">
-                <div class="item-meta-left">
-                    {{ $jumlah }} x Rp {{ number_format($harga, 0, ',', '.') }}
+        @foreach($groupedItems as $group)
+            @if($group['is_paket'])
+                <div class="item-row" style="font-weight: bold; margin-bottom: 2px;">📦 {{ $group['nama_paket'] }}</div>
+                @foreach($group['komponen'] as $k)
+                    <div class="item-row" style="padding-left: 10px; color: #555; margin-bottom: 1px;">
+                        - {{ $k->nama }} x {{ (int)$k->jumlah }}
+                    </div>
+                @endforeach
+                <div class="item-meta" style="margin-bottom: 4px; font-weight: bold;">
+                    <span>Subtotal Paket:</span>
+                    <span>Rp {{ number_format($group['total_harga'], 0, ',', '.') }}</span>
                 </div>
-                <div class="item-meta-right">
-                    Rp {{ number_format($subtotal, 0, ',', '.') }}
-                </div>
-            </div>
-
-            @if (!empty($row->catatan_item))
-                <div class="item-note">
-                    Catatan: {{ $row->catatan_item }}
+            @else
+                @php
+                    $row = $group['item'];
+                    $subtotalItem = (float)$row->harga * (int)$row->jumlah;
+                @endphp
+                <div class="item-row">
+                    <div class="item-name">{{ $row->nama }}</div>
+                    <div class="item-meta">
+                        <div class="item-meta-left">
+                            {{ (int)$row->jumlah }} x Rp {{ number_format((float)$row->harga, 0, ',', '.') }}
+                        </div>
+                        <div class="item-meta-right">
+                            Rp {{ number_format($subtotalItem, 0, ',', '.') }}
+                        </div>
+                    </div>
+                    @if(!empty($row->catatan_item))
+                        <div class="item-note">Catatan: {{ $row->catatan_item }}</div>
+                    @endif
                 </div>
             @endif
-        </div>
-    @endforeach
+        @endforeach
 
     <div class="divider"></div>
 

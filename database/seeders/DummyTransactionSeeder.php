@@ -71,7 +71,7 @@ class DummyTransactionSeeder extends Seeder
             ],
             [
                 'buyer_idx'  => 2, // agus_wijaya
-                'items'      => [[2, 3], [8, 2]], // Geprek Jumbo x3, Paha Bawah x2
+                'items'      => [[14, 2], [8, 2]], // PAKET HAJAT x2, Paha Bawah x2
                 'wilayah'    => 'Socah',
                 'payment'    => 'paid',
                 'order'      => 'completed',
@@ -80,7 +80,7 @@ class DummyTransactionSeeder extends Seeder
             ],
             [
                 'buyer_idx'  => 3, // dewi_lestari
-                'items'      => [[3, 2], [4, 1], [12, 3]], // Crispy Hemat x2, Crispy Jumbo, Le Minerale x3
+                'items'      => [[15, 2], [4, 1], [12, 3]], // PAKET HEMAT 1 x2, Crispy Jumbo, Le Minerale x3
                 'wilayah'    => 'Kamal',
                 'payment'    => 'paid',
                 'order'      => 'completed',
@@ -89,7 +89,7 @@ class DummyTransactionSeeder extends Seeder
             ],
             [
                 'buyer_idx'  => 4, // rizky_pratama
-                'items'      => [[6, 2], [9, 1], [13, 1]], // Gangnam Jumbo x2, Sayap, Teh Pucuk
+                'items'      => [[6, 2], [9, 1], [16, 1]], // Gangnam Jumbo x2, Sayap, PAKET HEMAT 2
                 'wilayah'    => 'Telang',
                 'payment'    => 'paid',
                 'order'      => 'completed',
@@ -98,7 +98,7 @@ class DummyTransactionSeeder extends Seeder
             ],
             [
                 'buyer_idx'  => 0, // budi_santoso (repeat)
-                'items'      => [[1, 1], [10, 1], [13, 2]], // Geprek Hemat, Paha Atas, Teh Pucuk x2
+                'items'      => [[17, 1], [10, 1], [13, 2]], // PAKET HEMAT 3, Paha Atas, Teh Pucuk x2
                 'wilayah'    => 'Kamal',
                 'payment'    => 'paid',
                 'order'      => 'completed',
@@ -126,7 +126,7 @@ class DummyTransactionSeeder extends Seeder
             // Processing order
             [
                 'buyer_idx'  => 3, // dewi_lestari
-                'items'      => [[2, 1], [6, 1], [13, 1]], // Geprek Jumbo, Gangnam Jumbo, Teh Pucuk
+                'items'      => [[14, 1], [6, 1], [13, 1]], // PAKET HAJAT, Gangnam Jumbo, Teh Pucuk
                 'wilayah'    => 'Telang',
                 'payment'    => 'paid',
                 'order'      => 'processing',
@@ -231,17 +231,53 @@ class DummyTransactionSeeder extends Seeder
                     $hargaBeli = $menu->harga_beli ?? 0;
                     $diskon = $menu->diskon ?? 0;
                     $hargaFinal = $diskon > 0 ? round($hargaJual * (100 - $diskon) / 100) : $hargaJual;
-                    $diskonAbsolut = $hargaJual - $hargaFinal;
 
-                    DB::table('detail_pesanan')->insert([
-                        'id_pesanan'  => $pesananId,
-                        'id_menu'     => $menuId,
-                        'jumlah'      => $qty,
-                        'harga'       => $hargaFinal,
-                        'harga_beli'  => $hargaBeli,
-                        'diskon'      => $diskonAbsolut,
-                        'catatan_item'=> null,
-                    ]);
+                    if ($menu->is_paket) {
+                        // PAKET: split to components
+                        $komponens = DB::table('paket_komposisi as pk')
+                            ->join('menu as m', 'm.id_menu', '=', 'pk.id_menu_komponen')
+                            ->where('pk.id_menu_paket', $menuId)
+                            ->get(['pk.id_menu_komponen', 'pk.jumlah as qty_komponen', 'm.harga as harga_komponen', 'm.harga_beli as harga_beli_komponen']);
+
+                        $totalHargaKomponen = 0;
+                        foreach ($komponens as $k) {
+                            $totalHargaKomponen += (int) $k->harga_komponen * (int) $k->qty_komponen;
+                        }
+
+                        foreach ($komponens as $k) {
+                            $hargaKomponenTotal = (int) $k->harga_komponen * (int) $k->qty_komponen;
+                            $alokasi_harga = $totalHargaKomponen > 0
+                                ? round($hargaKomponenTotal / $totalHargaKomponen * $hargaFinal)
+                                : 0;
+                            
+                            $alokasi_harga_beli = (int) $k->harga_beli_komponen * (int) $k->qty_komponen;
+
+                            DB::table('detail_pesanan')->insert([
+                                'id_pesanan'    => $pesananId,
+                                'id_menu'       => $k->id_menu_komponen,
+                                'id_menu_paket' => $menuId,
+                                'jumlah'        => (int) $k->qty_komponen * $qty,
+                                'harga'         => $alokasi_harga,
+                                'harga_beli'    => $alokasi_harga_beli,
+                                'diskon'        => 0, // Simplified for dummy
+                                'catatan_item'  => null,
+                            ]);
+                        }
+                    } else {
+                        // Regular item
+                        $diskonAbsolut = $hargaJual - $hargaFinal;
+
+                        DB::table('detail_pesanan')->insert([
+                            'id_pesanan'    => $pesananId,
+                            'id_menu'       => $menuId,
+                            'id_menu_paket' => null,
+                            'jumlah'        => $qty,
+                            'harga'         => $hargaFinal,
+                            'harga_beli'    => $hargaBeli,
+                            'diskon'        => $diskonAbsolut,
+                            'catatan_item'  => null,
+                        ]);
+                    }
                 }
             }
 

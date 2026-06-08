@@ -6,20 +6,22 @@
     <div class="container">
       <section id="home" class="mb-5">
         <div class="hero-section">
-          <div class="row align-items-center w-100">
+          <div class="row align-items-center m-0">
             <div class="col-md-6">
                 <h1 class="hero-title mb-3">Ayam Geprek Paling Mantap di Bumi!</h1>
                 <p class="hero-subtitle mb-4">
                     Pilih menu makanan yang kamu suka, minuman serta tambahan lainnya, dan pesan dengan mudah. Cocok buat anak kos, kantoran, dan keluarga.
                 </p>
-                <a href="#menu" class="btn btn-main text-white me-2 mb-2">Lihat Menu</a>
-                  <button type="button"
-                      class="btn btn-outline-secondary rounded-pill mb-2 guest-trigger">
-                      Lihat Keranjang
-                  </button>
+                <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center justify-content-md-start">
+                    <a href="#menu" class="btn btn-main text-white">Lihat Menu</a>
+                    <button type="button"
+                        class="btn btn-outline-secondary rounded-pill guest-trigger">
+                        Lihat Keranjang
+                    </button>
+                </div>
             </div>
-            <div class="col-md-6 text-center">
-              <img src="{{ asset('img/bann.webp') }}" class="img-fluid rounded-4" alt="Ayam Geprek">
+            <div class="col-md-6 text-center mt-4 mt-md-0">
+              <img src="{{ asset('img/bann.webp') }}" class="img-fluid rounded-4 hover-scale" alt="Ayam Geprek">
             </div>
           </div>
         </div>
