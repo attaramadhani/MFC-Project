@@ -82,7 +82,7 @@
                   <div class="card menu-card h-100">
                   <div class="menu-img-placeholder">
                       @if (!empty($menu->gambar))
-                      <img src="{{ asset('img/' . $menu->gambar) }}" class="w-100 h-100 object-fit-cover" alt="">
+                      <img src="{{ get_menu_image_url($menu->gambar) }}" class="w-100 h-100 object-fit-cover" alt="">
                       @endif
                   </div>
 

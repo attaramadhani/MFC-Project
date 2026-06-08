@@ -45,7 +45,7 @@
                         <tr>
                             <td style="width: 80px;">
                                 @if(!empty($m->gambar))
-                                    <img src="{{ asset('img/' . $m->gambar) }}" width="50" height="50" style="object-fit: cover;" class="rounded" alt="{{ $m->nama }}">
+                                    <img src="{{ get_menu_image_url($m->gambar) }}" width="50" height="50" style="object-fit: cover;" class="rounded" alt="{{ $m->nama }}">
                                 @endif
                             </td>
 

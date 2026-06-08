@@ -68,7 +68,7 @@
                 <input type="file" name="gambar" class="form-control">
                 @if(!empty($menu->gambar))
                     <div class="mt-2">
-                        <img src="{{ asset('img/' . $menu->gambar) }}" width="100" class="rounded border">
+                        <img src="{{ get_menu_image_url($menu->gambar) }}" width="100" class="rounded border">
                     </div>
                 @endif
             </div>

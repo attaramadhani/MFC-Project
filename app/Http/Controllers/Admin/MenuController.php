@@ -46,12 +46,35 @@ class MenuController extends Controller
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $newName = 'menu_' . time() . '_' . rand(1000, 9999) . '.' . $file->getClientOriginalExtension();
-            try {
-                $file->move(public_path('img'), $newName);
-                $gambar = $newName;
-            } catch (\Exception $e) {
-                // Ignore error on Vercel
-                $gambar = null;
+            
+            $supabaseUrl = env('SUPABASE_URL');
+            $supabaseKey = env('SUPABASE_KEY');
+            $bucket = env('SUPABASE_BUCKET', 'mfc-images');
+            
+            if ($supabaseUrl && $supabaseKey) {
+                // Upload to Supabase Storage
+                try {
+                    $url = rtrim($supabaseUrl, '/') . '/storage/v1/object/' . $bucket . '/' . $newName;
+                    $response = \Illuminate\Support\Facades\Http::withHeaders([
+                        'Authorization' => 'Bearer ' . $supabaseKey,
+                        'Content-Type' => $file->getMimeType(),
+                    ])->withBody(file_get_contents($file->getRealPath()), $file->getMimeType())
+                      ->post($url);
+                      
+                    if ($response->successful()) {
+                        $gambar = $newName;
+                    }
+                } catch (\Exception $e) {
+                    $gambar = null;
+                }
+            } else {
+                // Local fallback
+                try {
+                    $file->move(public_path('img'), $newName);
+                    $gambar = $newName;
+                } catch (\Exception $e) {
+                    $gambar = null;
+                }
             }
         }
 
@@ -142,14 +165,43 @@ class MenuController extends Controller
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $newName = 'menu_' . time() . '_' . rand(1000, 9999) . '.' . $file->getClientOriginalExtension();
-            try {
-                $file->move(public_path('img'), $newName);
-                if ($gambar && is_file(public_path('img/' . $gambar))) {
-                    @unlink(public_path('img/' . $gambar));
+            
+            $supabaseUrl = env('SUPABASE_URL');
+            $supabaseKey = env('SUPABASE_KEY');
+            $bucket = env('SUPABASE_BUCKET', 'mfc-images');
+
+            if ($supabaseUrl && $supabaseKey) {
+                try {
+                    $url = rtrim($supabaseUrl, '/') . '/storage/v1/object/' . $bucket . '/' . $newName;
+                    $response = \Illuminate\Support\Facades\Http::withHeaders([
+                        'Authorization' => 'Bearer ' . $supabaseKey,
+                        'Content-Type' => $file->getMimeType(),
+                    ])->withBody(file_get_contents($file->getRealPath()), $file->getMimeType())
+                      ->post($url);
+
+                    if ($response->successful()) {
+                        // Delete old file from Supabase if exists
+                        if ($gambar) {
+                            $deleteUrl = rtrim($supabaseUrl, '/') . '/storage/v1/object/' . $bucket . '/' . $gambar;
+                            \Illuminate\Support\Facades\Http::withHeaders([
+                                'Authorization' => 'Bearer ' . $supabaseKey,
+                            ])->delete($deleteUrl);
+                        }
+                        $gambar = $newName;
+                    }
+                } catch (\Exception $e) {
+                    // Ignore
                 }
-                $gambar = $newName;
-            } catch (\Exception $e) {
-                // Ignore error on Vercel
+            } else {
+                try {
+                    $file->move(public_path('img'), $newName);
+                    if ($gambar && is_file(public_path('img/' . $gambar))) {
+                        @unlink(public_path('img/' . $gambar));
+                    }
+                    $gambar = $newName;
+                } catch (\Exception $e) {
+                    // Ignore error on Vercel
+                }
             }
         }
 
@@ -219,8 +271,25 @@ class MenuController extends Controller
 
         DB::table('menu')->where('id_menu', $id)->delete();
 
-        if ($menu->gambar && is_file(public_path('img/' . $menu->gambar))) {
-            @unlink(public_path('img/' . $menu->gambar));
+        if ($menu->gambar) {
+            $supabaseUrl = env('SUPABASE_URL');
+            $supabaseKey = env('SUPABASE_KEY');
+            $bucket = env('SUPABASE_BUCKET', 'mfc-images');
+
+            if ($supabaseUrl && $supabaseKey) {
+                try {
+                    $deleteUrl = rtrim($supabaseUrl, '/') . '/storage/v1/object/' . $bucket . '/' . $menu->gambar;
+                    \Illuminate\Support\Facades\Http::withHeaders([
+                        'Authorization' => 'Bearer ' . $supabaseKey,
+                    ])->delete($deleteUrl);
+                } catch (\Exception $e) {
+                    // Ignore
+                }
+            }
+
+            if (is_file(public_path('img/' . $menu->gambar))) {
+                @unlink(public_path('img/' . $menu->gambar));
+            }
         }
 
         return redirect()->route('admin.menu.index')->with('success', 'Menu dihapus.');

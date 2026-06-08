@@ -77,7 +77,7 @@
             <div class="card menu-card h-100" style="border: 2px solid var(--red-light);">
               <div class="menu-img-placeholder">
                   @if (!empty($menu->gambar))
-                      <img src="{{ asset('img/' . $menu->gambar) }}"
+                      <img src="{{ get_menu_image_url($menu->gambar) }}"
                            class="w-100 h-100 object-fit-cover" alt="">
                   @endif
               </div>
@@ -176,7 +176,7 @@
               <div class="card menu-card h-100">
                 <div class="menu-img-placeholder">
                     @if (!empty($menu->gambar))
-                        <img src="{{ asset('img/' . $menu->gambar) }}"
+                        <img src="{{ get_menu_image_url($menu->gambar) }}"
                              class="w-100 h-100 object-fit-cover" alt="">
                     @endif
                 </div>
