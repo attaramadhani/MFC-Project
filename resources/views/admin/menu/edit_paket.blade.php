@@ -27,7 +27,7 @@
             @method('PUT')
             
             <input type="hidden" name="is_paket" value="1">
-            <input type="hidden" name="harga_beli" value="{{ $menu->harga_beli }}">
+            <input type="hidden" name="harga_beli" value="{{ (int) $menu->harga_beli }}">
 
             <div class="mb-3">
                 <label class="form-label">Nama Paket</label>
