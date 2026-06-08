@@ -272,7 +272,7 @@ class CheckoutController extends Controller
                     'order_status' => $order_status_awal,
                     'stok_dikurangi' => DB::raw('TRUE'),
                     'created_at' => now(),
-                ]);
+                ], 'id_pesanan');
 
                 foreach ($items as $item) {
                     $diskon_amount = $item->harga * ($item->diskon ?? 0) / 100;
