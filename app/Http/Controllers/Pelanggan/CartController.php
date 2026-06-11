@@ -95,9 +95,11 @@ class CartController extends Controller
 
             if ($newQty > 0) {
                 if ($newQty > $menu->stok) {
+                    $currentCartQty = $row ? (int) $row->jumlah : 0;
                     return response()->json([
                         'success' => false,
                         'message' => 'Stok tidak mencukupi. Tersisa ' . $menu->stok . ' porsi.',
+                        'current_qty' => $currentCartQty,
                     ]);
                 }
 
@@ -131,6 +133,7 @@ class CartController extends Controller
                     return response()->json([
                         'success' => false,
                         'message' => 'Stok habis.',
+                        'current_qty' => 0,
                     ]);
                 }
                 DB::table('keranjang')->insert([
@@ -156,9 +159,11 @@ class CartController extends Controller
 
             if ($newQty > 0) {
                 if ($newQty > $menu->stok) {
+                    $currentCartQty = $row ? (int) $row->jumlah : 0;
                     return response()->json([
                         'success' => false,
                         'message' => 'Stok tidak mencukupi. Tersisa ' . $menu->stok . ' porsi.',
+                        'current_qty' => $currentCartQty,
                     ]);
                 }
                 DB::table('keranjang')
@@ -194,6 +199,7 @@ class CartController extends Controller
                 'm.nama',
                 'm.harga',
                 'm.diskon',
+                'm.stok',
             ]);
 
         if ($items->isEmpty()) {

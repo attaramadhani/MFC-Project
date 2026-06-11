@@ -128,7 +128,7 @@
                       @endif
                     </div>
 
-                    <div class="qty-control" data-id="{{ $idMenu }}">
+                    <div class="qty-control" data-id="{{ $idMenu }}" data-max="{{ $menu->stok }}">
                       @if($menu->stok <= 0)
                         <span class="badge bg-secondary">Habis</span>
                       @else
@@ -227,7 +227,7 @@
                         @endif
                       </div>
 
-                      <div class="qty-control" data-id="{{ $idMenu }}">
+                      <div class="qty-control" data-id="{{ $idMenu }}" data-max="{{ $menu->stok }}">
                         @if($menu->stok <= 0)
                           <span class="badge bg-secondary">Habis</span>
                         @else

@@ -39,7 +39,7 @@
                             Rp {{ number_format($subtotal, 0, ',', '.') }}
                         </div>
 
-                        <div class="qty-control qty-control-sm" data-id="{{ $idMenu }}">
+                        <div class="qty-control qty-control-sm" data-id="{{ $idMenu }}" data-max="{{ $row->stok }}">
                             <button
                                 type="button"
                                 class="qty-btn-modal"
