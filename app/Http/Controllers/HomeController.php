@@ -8,6 +8,13 @@ class HomeController extends Controller
 {
     public function index()
     {
+        if (\Illuminate\Support\Facades\Auth::check()) {
+            $role = \Illuminate\Support\Facades\Auth::user()->role;
+            return $role === 'admin'
+                ? redirect()->route('admin.dashboard')
+                : redirect()->route('pelanggan.index');
+        }
+
         $menus = Menu::orderBy('kategori')->orderBy('nama')->get();
 
         $kategoriMap = [
