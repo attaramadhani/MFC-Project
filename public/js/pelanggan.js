@@ -48,10 +48,19 @@ function showMfcToast(message, type = 'success') {
     }, 4200);
 }
 
-// Helper to get current quantity from UI
-function getCurrentQty(idMenu) {
+// Helper to get current quantity from UI, relative to a target element if provided
+function getCurrentQty(idMenu, relativeEl) {
     if (pendingQuantities[idMenu] !== undefined) {
         return pendingQuantities[idMenu];
+    }
+    if (relativeEl) {
+        const qtyControl = relativeEl.closest('.qty-control');
+        if (qtyControl) {
+            const input = qtyControl.querySelector('.qty-input');
+            if (input) return parseInt(input.value, 10) || 0;
+            const span = qtyControl.querySelector('.qty-value');
+            if (span) return parseInt(span.textContent, 10) || 0;
+        }
     }
     const input = document.querySelector('.qty-input[data-id="' + idMenu + '"]');
     if (input) {
@@ -64,8 +73,15 @@ function getCurrentQty(idMenu) {
     return 0;
 }
 
-// Helper to get max stock boundary from container
-function getMaxStok(idMenu) {
+// Helper to get max stock boundary from container, relative to a target element if provided
+function getMaxStok(idMenu, relativeEl) {
+    if (relativeEl) {
+        const qtyControl = relativeEl.closest('.qty-control');
+        if (qtyControl) {
+            const maxVal = parseInt(qtyControl.getAttribute('data-max'), 10);
+            if (!isNaN(maxVal)) return maxVal;
+        }
+    }
     const qtyControl = document.querySelector('.qty-control[data-id="' + idMenu + '"]');
     if (qtyControl) {
         const maxVal = parseInt(qtyControl.getAttribute('data-max'), 10);
@@ -191,8 +207,8 @@ document.addEventListener('click', function (e) {
     const action = btn.getAttribute('data-action');
     if (!idMenu || !action) return;
 
-    const currentQty = getCurrentQty(idMenu);
-    const maxStok = getMaxStok(idMenu);
+    const currentQty = getCurrentQty(idMenu, btn);
+    const maxStok = getMaxStok(idMenu, btn);
     let targetQty = currentQty;
 
     if (action === 'plus') {
@@ -227,7 +243,7 @@ document.addEventListener('click', function (e) {
                     pendingQuantities[idMenu] = data.current_qty;
                 } else {
                     delete pendingQuantities[idMenu];
-                    syncQtyDisplay(idMenu, getCurrentQty(idMenu));
+                    syncQtyDisplay(idMenu, getCurrentQty(idMenu, btn));
                 }
             }
         }, targetQty);
@@ -242,7 +258,7 @@ document.addEventListener('input', function (e) {
     const idMenu = input.dataset.id;
     if (!idMenu) return;
 
-    const maxStok = getMaxStok(idMenu);
+    const maxStok = getMaxStok(idMenu, input);
     let val = parseInt(input.value, 10);
     if (!isNaN(val)) {
         if (val < 0) {
@@ -263,7 +279,7 @@ document.addEventListener('change', function (e) {
     if (!idMenu) return;
 
     const prev = parseInt(input.dataset.prev || '0', 10);
-    const maxStok = getMaxStok(idMenu);
+    const maxStok = getMaxStok(idMenu, input);
     let target = parseInt(input.value, 10);
     if (isNaN(target) || target < 0) target = 0;
     if (target > maxStok) target = maxStok;
@@ -291,7 +307,7 @@ document.addEventListener('change', function (e) {
                 pendingQuantities[idMenu] = data.current_qty;
             } else {
                 delete pendingQuantities[idMenu];
-                syncQtyDisplay(idMenu, getCurrentQty(idMenu));
+                syncQtyDisplay(idMenu, getCurrentQty(idMenu, input));
             }
         }
     }, target);
