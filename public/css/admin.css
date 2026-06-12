@@ -286,8 +286,7 @@ body {
     gap: 1rem;
     margin-bottom: 1.25rem;
 }
-
-.db-card {
+.db-card, .stat-card {
     background: var(--white);
     border: 1px solid var(--border);
     border-radius: 12px;
@@ -298,7 +297,7 @@ body {
     transition: box-shadow 0.2s, transform 0.2s;
 }
 
-.db-card:hover {
+.db-card:hover, .stat-card:hover {
     box-shadow: 0 6px 20px rgba(0,0,0,0.08);
     transform: translateY(-2px);
 }
