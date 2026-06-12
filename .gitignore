@@ -28,3 +28,4 @@ sync_payment.php
 *.docx
 
 .vercel
+.env*
